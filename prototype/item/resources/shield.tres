@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="Shop_item" load_steps=2 format=3 uid="uid://b4g2vjxgabfso"]
+[gd_resource type="Resource" script_class="Item_resource" load_steps=2 format=3 uid="uid://b4g2vjxgabfso"]
 
 [ext_resource type="Script" path="res://item/Item_resource.gd" id="1_m2vxj"]
 
@@ -13,3 +13,7 @@ type = "equip"
 delivery_time = 30
 sprite = 6
 price = 200
+passive = ""
+ready = false
+delivered = false
+sell_price = 5

@@ -5,12 +5,15 @@
 [resource]
 script = ExtResource("1_uaf28")
 strength = 0
+armor = 0
 endurance = 50
 sight = 0
 agility = 0
 reach = 0
 cadence = 0
 infliction = 0
+health_regen = 0
+mana_regen = 0
 passive = ""
 item_name = "Shield"
 icon = "res://addons/items/images/item7.png"

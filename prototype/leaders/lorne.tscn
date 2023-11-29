@@ -1,9 +1,9 @@
 [gd_scene load_steps=30 format=3 uid="uid://ck4p5k4ty45uj"]
 
 [ext_resource type="PackedScene" uid="uid://dao7ctjjxffjy" path="res://unit/Unit.tscn" id="1"]
-[ext_resource type="PackedScene" path="res://weapons/poleaxe.tscn" id="2"]
-[ext_resource type="Texture2D" uid="uid://byyqcyeqykru2" path="res://assets/leaders/lorne_blue.png" id="3"]
-[ext_resource type="Texture2D" uid="uid://cer3uaedfomoj" path="res://assets/leaders/lorne_red.png" id="5"]
+[ext_resource type="PackedScene" uid="uid://dmoqfwxe8nfta" path="res://weapons/poleaxe.tscn" id="2"]
+[ext_resource type="Texture2D" uid="uid://gb3rukyysglx" path="res://assets/leaders/lorne_blue.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://opqcdpweysh3" path="res://assets/leaders/lorne_red.png" id="5"]
 
 [sub_resource type="AtlasTexture" id="48"]
 atlas = ExtResource("3")

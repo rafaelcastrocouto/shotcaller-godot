@@ -13,23 +13,23 @@ signal item_pressed(item)
 
 ## don't use Item class here, use it's derived classes [EquipItem, ThrowableItem, ConsumableItem], and extend them instead of extending this class.
 @export var item: Item:
-    set(value):
-        item = value
-        if not item:
-            name_label.text = ""
-            price_label.text = ""
-            icon = null
-            print_debug("invalid item! item = %s", item)
-            return
-        # FIXME: this should be done in a better way inside the validation function
-        # it will only print item info in editor and debug releases.
-        print_debug("item_name = %s, item_value = %s, has_texture = %s" % [item.item_name, item.price, item.icon != null])
-        ## The item icon is just a path, so we need to load it to an image then create a texture from the image.
-        if item.icon:
-            icon = load(item.icon)
-        # Update label and price text.
-        name_label.text = item.item_name
-        price_label.text = str(item.price)
+		set(value):
+				item = value
+				if not item:
+						name_label.text = ""
+						price_label.text = ""
+						icon = null
+						print_debug("invalid item! item = %s", item)
+						return
+				# FIXME: this should be done in a better way inside the validation function
+				# it will only print item info in editor and debug releases.
+				print_debug("item_name = %s, item_value = %s, has_texture = %s" % [item.item_name, item.price, item.icon != null])
+				## The item icon is just a path, so we need to load it to an image then create a texture from the image.
+				if item.icon:
+						icon = load(item.icon)
+				# Update label and price text.
+				name_label.text = item.item_name
+				price_label.text = str(item.price)
 
 ## This should be here because it's a temp variable
 var price_after_discount
@@ -44,39 +44,39 @@ var price_label := Label.new()
 
 # We need to pass an item so it automatically loads it. In editor we can add the item manually to the item property
 func _init(new_item: Item = null):
-    if new_item:
-        item = new_item
+		if new_item:
+				item = new_item
 
-    custom_minimum_size = Vector2i(64, 64)
+		custom_minimum_size = Vector2i(64, 64)
 
-    # Theme setup
-    texture_filter = TEXTURE_FILTER_NEAREST
-    icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    price_label.add_theme_color_override("font_color", Color(1, 0.796, 0.243))
-    
-    # Node setup
-    ## a margin container will be easier than usign anchors, and will allow us to define margins for the labels.
-    var margin := MarginContainer.new()
-    for m in ["left", "right", "top", "bottom"]:
-        margin.add_theme_constant_override("margin_%s" % m, 4)
-    add_child(margin)
-    margin.set_anchors_preset(PRESET_FULL_RECT)
+		# Theme setup
+		texture_filter = TEXTURE_FILTER_NEAREST
+		icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		price_label.add_theme_color_override("font_color", Color(1, 0.796, 0.243))
+		
+		# Node setup
+		## a margin container will be easier than usign anchors, and will allow us to define margins for the labels.
+		var margin := MarginContainer.new()
+		for m in ["left", "right", "top", "bottom"]:
+				margin.add_theme_constant_override("margin_%s" % m, 4)
+		add_child(margin)
+		margin.set_anchors_preset(PRESET_FULL_RECT)
 
-    margin.add_child(name_label)
-    name_label.autowrap_mode = TextServer.AUTOWRAP_WORD
-    name_label.size_flags_vertical = SIZE_SHRINK_BEGIN
-    name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		margin.add_child(name_label)
+		name_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+		name_label.size_flags_vertical = SIZE_SHRINK_BEGIN
+		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
-    margin.add_child(price_label)
-    price_label.size_flags_horizontal = SIZE_EXPAND | SIZE_SHRINK_END
-    price_label.size_flags_vertical = SIZE_SHRINK_END
+		margin.add_child(price_label)
+		price_label.size_flags_horizontal = SIZE_EXPAND | SIZE_SHRINK_END
+		price_label.size_flags_vertical = SIZE_SHRINK_END
 
-    pressed.connect(_on_button_pressed)
+		pressed.connect(_on_button_pressed)
 
 
 ## A remap for button's pressed signal that will return the item when the button is pressed0.
 func _on_button_pressed():
-    emit_signal("item_pressed", item)
+		emit_signal("item_pressed", item)
 
 
 # # FIXME: remove this later.
@@ -100,13 +100,13 @@ func _on_button_pressed():
 
 # Sell button should goes to a new script, because we will have lots of instances of this Class.
 
-"""
-class SellButton:
-    extends Button
-
-    func _init():
-        pass
-"""
+#"""
+#class SellButton:
+#    extends Button
+#
+#    func _init():
+#        pass
+#"""
 
 # FIXME: not needed here, guessing it's root ? use get_tree().get_root().get_node("Game") or get_tree().get_current_scene()
 # var game:Node
@@ -119,7 +119,7 @@ class SellButton:
 # var saved_icon
 
 # FIXME: don't know it's use case.
-# var poison = preload("res://item/potions/poison.tscn").instantiate()
+# var poison = preload("res://mechanics/poison/poison.tscn").instantiate()
 
 
 # func setup(new_item):

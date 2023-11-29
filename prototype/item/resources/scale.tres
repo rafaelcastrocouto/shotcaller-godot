@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="Shop_item" load_steps=2 format=3 uid="uid://nyvphyxe2c2o"]
+[gd_resource type="Resource" script_class="Item_resource" load_steps=2 format=3 uid="uid://nyvphyxe2c2o"]
 
 [ext_resource type="Script" path="res://item/Item_resource.gd" id="1_0m7y3"]
 
@@ -16,3 +16,6 @@ delivery_time = 30
 sprite = 8
 price = 500
 passive = ""
+ready = false
+delivered = false
+sell_price = 5

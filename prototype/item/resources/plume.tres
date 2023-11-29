@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="Shop_item" load_steps=2 format=3 uid="uid://midj7mrdtjfl"]
+[gd_resource type="Resource" script_class="Item_resource" load_steps=2 format=3 uid="uid://midj7mrdtjfl"]
 
 [ext_resource type="Script" path="res://item/Item_resource.gd" id="1_fgl47"]
 
@@ -14,3 +14,6 @@ delivery_time = 15
 sprite = 10
 price = 350
 passive = "res://items/passives/plume.tscn"
+ready = false
+delivered = false
+sell_price = 5

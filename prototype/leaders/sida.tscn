@@ -1,9 +1,9 @@
 [gd_scene load_steps=21 format=3 uid="uid://by38rvd582gku"]
 
 [ext_resource type="PackedScene" uid="uid://dao7ctjjxffjy" path="res://unit/Unit.tscn" id="1"]
-[ext_resource type="PackedScene" path="res://weapons/spear.tscn" id="2"]
-[ext_resource type="Texture2D" uid="uid://dhugym455dkca" path="res://assets/leaders/sida_blue.png" id="3"]
-[ext_resource type="Texture2D" uid="uid://iog1y46mm80h" path="res://assets/leaders/sida_red.png" id="4"]
+[ext_resource type="PackedScene" uid="uid://ckgjqcxv7vpn6" path="res://weapons/spear.tscn" id="2"]
+[ext_resource type="Texture2D" uid="uid://dh270n62e1v2w" path="res://assets/leaders/sida_blue.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://bidwjho2nlo1b" path="res://assets/leaders/sida_red.png" id="4"]
 
 [sub_resource type="AtlasTexture" id="40"]
 atlas = ExtResource("3")

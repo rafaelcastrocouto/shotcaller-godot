@@ -1,9 +1,9 @@
 [gd_scene load_steps=24 format=3 uid="uid://drrjv27fe105a"]
 
 [ext_resource type="PackedScene" uid="uid://dao7ctjjxffjy" path="res://unit/Unit.tscn" id="1"]
-[ext_resource type="PackedScene" path="res://weapons/curved_sword.tscn" id="2"]
-[ext_resource type="Texture2D" uid="uid://cc876xmfnpp21" path="res://assets/leaders/raja_blue.png" id="3"]
-[ext_resource type="Texture2D" uid="uid://cf6obc17tqxus" path="res://assets/leaders/raja_red.png" id="4"]
+[ext_resource type="PackedScene" uid="uid://bq02ut2if7ooy" path="res://weapons/curved_sword.tscn" id="2"]
+[ext_resource type="Texture2D" uid="uid://ug67jvgpt11w" path="res://assets/leaders/raja_blue.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://cshtwljwco0f6" path="res://assets/leaders/raja_red.png" id="4"]
 
 [sub_resource type="AtlasTexture" id="37"]
 atlas = ExtResource("3")
