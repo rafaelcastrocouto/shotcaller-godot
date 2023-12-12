@@ -2,9 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://dao7ctjjxffjy" path="res://unit/Unit.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://diee03xgfkdfb" path="res://weapons/sword.tscn" id="2"]
-[ext_resource type="Texture2D" uid="uid://xne3vf5386s5" path="res://assets/pawns/infantry_blue.png" id="3_alvud"]
-[ext_resource type="Texture2D" uid="uid://bn44lk22rvkye" path="res://assets/pawns/infantry_neutral.png" id="4_b7k3e"]
-[ext_resource type="Texture2D" uid="uid://cdjbbr8y06yp7" path="res://assets/pawns/infantry_red.png" id="5_lxg3d"]
+[ext_resource type="Texture2D" uid="uid://bt3c51p5ln1mj" path="res://assets/pawns/infantry_blue.png" id="3_alvud"]
+[ext_resource type="Texture2D" uid="uid://cgovau2kj4aat" path="res://assets/pawns/infantry_neutral.png" id="4_b7k3e"]
+[ext_resource type="Texture2D" uid="uid://dcss4gso6bsaa" path="res://assets/pawns/infantry_red.png" id="5_lxg3d"]
 
 [sub_resource type="AtlasTexture" id="34"]
 atlas = ExtResource("3_alvud")

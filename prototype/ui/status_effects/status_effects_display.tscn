@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://c870sfdrpd0ia"]
 
-[ext_resource type="Texture2D" uid="uid://dco3u1ib8supg" path="res://assets/ui/abilities/aura_of_courage_small.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://c2vte8tugxjov" path="res://assets/ui/abilities/aura_of_courage_small.png" id="1"]
 [ext_resource type="Script" path="res://ui/status_effects/status_effects_display.gd" id="2"]
 
 [node name="status_effect_display" type="HBoxContainer"]

@@ -1,9 +1,9 @@
 [gd_scene load_steps=24 format=3 uid="uid://h0vyyonmjm1o"]
 
-[ext_resource type="Texture2D" uid="uid://d3ynt2rfnpi17" path="res://assets/neutrals/lumberjack_blue.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://b3f8y5heio10c" path="res://assets/neutrals/lumberjack_blue.png" id="1"]
 [ext_resource type="PackedScene" uid="uid://dao7ctjjxffjy" path="res://unit/Unit.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://jbsr1bgnukad" path="res://weapons/jack_axe.tscn" id="4"]
-[ext_resource type="Texture2D" uid="uid://cqjbnwfyyj1o4" path="res://assets/neutrals/lumberjack_red.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://c8k40fkianxsp" path="res://assets/neutrals/lumberjack_red.png" id="5"]
 
 [sub_resource type="AtlasTexture" id="35"]
 atlas = ExtResource("1")

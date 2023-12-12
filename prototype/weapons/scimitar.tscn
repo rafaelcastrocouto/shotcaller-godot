@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://dyk8ccwsuyvup"]
 
-[ext_resource type="Texture2D" uid="uid://ho1017q4hybm" path="res://assets/leaders/osman_blue.png" id="1"]
-[ext_resource type="Texture2D" uid="uid://0dpoqgxha7cv" path="res://assets/leaders/osman_red.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://cno3giwdn4mik" path="res://assets/leaders/osman_blue.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://d1jwruwynihoi" path="res://assets/leaders/osman_red.png" id="2"]
 
 [sub_resource type="AtlasTexture" id="43"]
 atlas = ExtResource("1")

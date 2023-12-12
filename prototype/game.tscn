@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://map/map_manager.gd" id="6"]
 [ext_resource type="Script" path="res://controls/selection.gd" id="7"]
 [ext_resource type="Script" path="res://test/test.gd" id="9"]
-[ext_resource type="AudioStream" uid="uid://bcyvb0f37c1lw" path="res://assets/soundtrack/Shotcaller_Menu_Theme.mp3" id="12_bsynf"]
+[ext_resource type="AudioStream" uid="uid://difkcpv34xb7n" path="res://assets/soundtrack/Shotcaller_Menu_Theme.mp3" id="12_bsynf"]
 [ext_resource type="Script" path="res://ui/transitions/transitions.gd" id="14_dacea"]
 
 [node name="game" type="Control"]

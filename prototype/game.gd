@@ -1,7 +1,5 @@
 extends Control
 
-# self = game
-
 signal game_started
 signal game_map_loaded
 signal game_resumed
@@ -21,7 +19,6 @@ var control_state:String = "selection"
 @onready var spawn :=%spawn
 
 var rng = RandomNumberGenerator.new()
-
 
 func _ready():
 #	Engine.time_scale = 2

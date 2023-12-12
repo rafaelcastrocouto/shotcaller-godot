@@ -2,8 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://dao7ctjjxffjy" path="res://unit/Unit.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://cl0xcyvl7p3ix" path="res://skills/abilites/multishot.tscn" id="2"]
-[ext_resource type="Texture2D" uid="uid://fhioawflnfhy" path="res://assets/leaders/robin_blue.png" id="3"]
-[ext_resource type="Texture2D" uid="uid://d2pmxs7g3yta4" path="res://assets/leaders/robin_red.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://dwk8mlnuvbbkm" path="res://assets/leaders/robin_blue.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://cgri3ekw72j0v" path="res://assets/leaders/robin_red.png" id="4"]
 [ext_resource type="PackedScene" uid="uid://bs1y6p7auejab" path="res://weapons/leader_bow.tscn" id="5"]
 
 [sub_resource type="AtlasTexture" id="43"]

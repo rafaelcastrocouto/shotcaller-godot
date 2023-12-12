@@ -2,10 +2,10 @@
 
 [ext_resource type="PackedScene" uid="uid://dao7ctjjxffjy" path="res://unit/Unit.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://dmoqfwxe8nfta" path="res://weapons/poleaxe.tscn" id="2"]
-[ext_resource type="Texture2D" uid="uid://gb3rukyysglx" path="res://assets/leaders/lorne_blue.png" id="5_0ch74"]
-[ext_resource type="Texture2D" uid="uid://opqcdpweysh3" path="res://assets/leaders/lorne_red.png" id="6_qtqu6"]
-[ext_resource type="Texture2D" uid="uid://25oqbh540unp" path="res://assets/leaders/joan_red.png" id="7"]
-[ext_resource type="Texture2D" uid="uid://c02k1g7nwua1e" path="res://assets/leaders/joan_blue.png" id="8"]
+[ext_resource type="Texture2D" uid="uid://bn7b0wldo03xh" path="res://assets/leaders/lorne_blue.png" id="5_0ch74"]
+[ext_resource type="Texture2D" uid="uid://tobpsjtu7gdd" path="res://assets/leaders/lorne_red.png" id="6_qtqu6"]
+[ext_resource type="Texture2D" uid="uid://dgltiwqp6mrts" path="res://assets/leaders/joan_red.png" id="7"]
+[ext_resource type="Texture2D" uid="uid://b3c1quefn5ng4" path="res://assets/leaders/joan_blue.png" id="8"]
 
 [sub_resource type="AtlasTexture" id="65"]
 atlas = ExtResource("8")

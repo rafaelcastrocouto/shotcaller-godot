@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://dri8b1ou47gfi"]
 
-[ext_resource type="PackedScene" path="res://ui/scoreboard/scoreboard_entry.tscn" id="1"]
-[ext_resource type="Texture2D" uid="uid://bx7snlonj1ism" path="res://assets/ui/design.png" id="1_wiv0b"]
+[ext_resource type="PackedScene" uid="uid://b82drdga2jcbp" path="res://ui/scoreboard/scoreboard_entry.tscn" id="1"]
+[ext_resource type="Texture2D" uid="uid://s3d4elhpi6qj" path="res://assets/ui/design.png" id="1_wiv0b"]
 [ext_resource type="FontFile" uid="uid://cpn64vafgcvfw" path="res://assets/ui/fonts/CompassPro.tres" id="2_tovuh"]
 [ext_resource type="Script" path="res://ui/scoreboard/scoreboard.gd" id="4"]
 

@@ -2,8 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://dao7ctjjxffjy" path="res://unit/Unit.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://dovbf0dk542xf" path="res://weapons/shuriken.tscn" id="2"]
-[ext_resource type="Texture2D" uid="uid://csu7vdtxkp2al" path="res://assets/leaders/nagato_blue.png" id="4"]
-[ext_resource type="Texture2D" uid="uid://2qphdpavcotl" path="res://assets/leaders/nagato_red.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://c0ud5xp7pg0v8" path="res://assets/leaders/nagato_blue.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://c3kryf8g15ao5" path="res://assets/leaders/nagato_red.png" id="5"]
 
 [sub_resource type="AtlasTexture" id="42"]
 atlas = ExtResource("4")
