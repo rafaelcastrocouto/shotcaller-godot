@@ -39,6 +39,7 @@ func campaign_start():
 	WorldState.set_state("player_team", "blue")
 	WorldState.set_state("enemy_team", "red")
 	WorldState.set_state("game_mode", "campaign")
+	await game.ui.show_campaign_intro()
 	game.start()
 
 

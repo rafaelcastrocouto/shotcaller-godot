@@ -2,6 +2,9 @@ extends CanvasLayer
 
 #class_name _ui
 
+signal campaign_intro_finished
+
+@onready var campaign_intro := $"%campaign_intro"
 @onready var fps := $"%fps"
 @onready var top_label := $"%top_label"
 @onready var shop := $"%shop"
@@ -55,6 +58,18 @@ func show_main_menu():
 	show_mid()
 	show_version()
 	main_menu.show()
+
+
+func show_campaign_intro():
+	hide_all()
+	campaign_intro.show()
+	await campaign_intro_finished
+
+
+func _input(event):
+	if campaign_intro.visible and event.is_pressed():
+		campaign_intro.hide()
+		campaign_intro_finished.emit()
 
 
 func show_version():
