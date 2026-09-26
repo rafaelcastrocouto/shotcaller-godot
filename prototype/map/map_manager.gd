@@ -8,7 +8,7 @@ var current_map := "one_lane_map"
 
 var one_lane_map:PackedScene = preload("res://map/maps/one_lane_map.tscn")
 var three_lane_map:PackedScene = preload("res://map/maps/three_lane_map.tscn")
-var rect_test_map:PackedScene = preload("res://map/maps/rect_test_map.tscn")
+var campaign_map:PackedScene = preload("res://map/maps/campaign_map.tscn")
 
 
 func load_current_map():

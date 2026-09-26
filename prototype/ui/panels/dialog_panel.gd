@@ -20,7 +20,6 @@ func _ready():
 
 func campaign_start():
 	if WorldState.get_state("game_mode") == "campaign":
-		await get_tree().create_timer(0.25).timeout
 		var joan = WorldState.get_state("player_leaders")[0]
 		show_msg(joan, "We are under attack!")
 
@@ -37,7 +36,7 @@ func show_msg(leader, msg_text):
 	#var sprite = index of leader
 	#$panel/portrait/sprite.region_rect.position.x = sprite * 64
 	display_name.text = leader.name
-	await get_tree().create_timer(2).timeout
+	await get_tree().create_timer(0.5).timeout
 	can_hide = true
 
 
@@ -49,4 +48,4 @@ func hide_msg():
 
 func _input(event):
 	if event.is_pressed():
-		game.ui.dialog.hide_msg()
+		hide_msg()

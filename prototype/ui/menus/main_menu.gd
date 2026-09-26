@@ -34,12 +34,11 @@ func show_new_game_menu():
 
 func campaign_start():
 	hide()
-	game.map_manager.current_map = "rect_test_map"
+	game.map_manager.current_map = "campaign_map"
 	WorldState.set_state("player_leaders_names", ["joan"])
 	WorldState.set_state("player_team", "blue")
 	WorldState.set_state("enemy_team", "red")
 	WorldState.set_state("game_mode", "campaign")
-	await game.ui.show_campaign_intro()
 	game.start()
 
 
