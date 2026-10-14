@@ -50,3 +50,7 @@ func perform(_agent, _delta) -> bool:
 # Runs once when the action ends
 func exit(_agent) :
 	pass
+
+
+func on_move_requested(agent, delta: float) -> void:
+	Goap.get_action("MoveAction").on_move_requested(agent, delta)

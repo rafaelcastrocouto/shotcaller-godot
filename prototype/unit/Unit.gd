@@ -10,6 +10,7 @@ var game:Node
 signal unit_reseted
 signal unit_idle_ended
 signal unit_move_ended
+signal unit_move_requested(delta: float)
 signal unit_arrived
 signal unit_started_channeling
 signal unit_healed
@@ -400,7 +401,7 @@ func on_idle_end(): # every idle animation end (0.6s)
 
 
 func on_move(delta): # movement tick
-	Goap.move.step(self, delta)
+	if self.moves: emit_signal("unit_move_requested", delta)
 
 
 func on_move_end(): # every move animation end (0.6s for speed = 1)

@@ -102,6 +102,11 @@ func step(unit, delta):
 		unit.global_position += motion
 
 
+func on_move_requested(agent, delta: float) -> void:
+	if not agent.get_state("is_stunned"):
+		step(agent.get_unit(), delta)
+
+
 func _resolve_legacy_blocking(unit, motion: Vector2) -> Vector2:
 	if motion == Vector2.ZERO or _can_move_to(unit, motion):
 		return motion

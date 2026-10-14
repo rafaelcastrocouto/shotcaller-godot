@@ -33,6 +33,7 @@ func _ready():
 	_unit.unit_arrived.connect(on_arrive)
 	_unit.unit_idle_ended.connect(on_idle_end)
 	_unit.unit_stun_ended.connect(on_stun_end)
+	_unit.unit_move_requested.connect(_on_move_requested)
 	_unit.unit_move_ended.connect(on_move_end)
 	_unit.unit_attack_ended.connect(on_attack_end)
 	_unit.unit_attack_release.connect(
@@ -230,6 +231,11 @@ func on_idle_end():
 		get_current_action().on_idle_end(self)
 	if has_goal_function("on_idle_end"):
 		_get_best_goal().on_idle_end(self)
+
+
+func _on_move_requested(delta: float) -> void:
+	if has_action_function("on_move_requested"):
+		get_current_action().on_move_requested(self, delta)
 
 
 func on_move_end():
