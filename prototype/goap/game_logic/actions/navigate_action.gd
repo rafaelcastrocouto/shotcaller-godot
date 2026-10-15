@@ -158,7 +158,7 @@ func find_custom_path(from: Vector2, to: Vector2) -> Array:
 		and path_grid.isWalkableAt(target_cell.x, target_cell.y)
 	):
 		var solved_path = path_finder.findPath(
-			start_cell.x, start_cell.y, target_cell.x, target_cell.y, path_grid
+			start_cell.x, start_cell.y, target_cell.x, target_cell.y, path_grid.clone()
 		)
 		var path = []
 		for index in range(1, solved_path.size()):

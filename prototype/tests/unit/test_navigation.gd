@@ -41,7 +41,7 @@ func run(harness) -> void:
 	var map = TestMap.new()
 	harness.add_child(map)
 	WorldState.set_state("map", map)
-	# Repeated finds reuse the same grid and reset its mutable search state.
+	# Each solve uses a cloned working grid, preserving the map's walkability data.
 	var navigate_action = NavigateAction.new()
 	navigate_action.path_grid = Pathfinder.GridGD.new().Grid.new(5, 5)
 	navigate_action.path_finder = finder
@@ -52,7 +52,7 @@ func run(harness) -> void:
 	var start_node = navigate_action.path_grid.getNodeAt(1, 1)
 	harness.check(
 		not start_node.opened and not start_node.closed and start_node.parent == null,
-		"Completed searches reset only the nodes they visited."
+		"Path searches leave the source walkability grid untouched."
 	)
 	harness.check(
 		not navigate_action.find(Vector2(32, 32), Vector2(288, 288)).is_empty(),
@@ -60,7 +60,7 @@ func run(harness) -> void:
 	)
 	harness.check(
 		not navigate_action.find(Vector2(224, 224), Vector2(96, 96)).is_empty(),
-		"Jump-point search state resets before reusing the path grid."
+		"Repeated navigation solves remain valid on the same source grid."
 	)
 	map.free()
 	WorldState.set_state("map", old_map)
