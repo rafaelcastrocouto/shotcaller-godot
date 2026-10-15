@@ -232,7 +232,6 @@ class Grid:
 		return newGrid
 
 
-
 # * A node in grid. 
 # * This class holds some basic information about a node and custom 
 # * attributes may be added, depending on the algorithms' needs.

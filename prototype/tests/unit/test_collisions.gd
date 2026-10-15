@@ -19,7 +19,24 @@ func run(harness) -> void:
 	var nearby = tree.get_units_in_radius(Vector2(32, 32), 16)
 	harness.check(nearby.has(near_unit), "Quadtree radius queries include nearby units.")
 	harness.check(not nearby.has(far_unit), "Quadtree radius queries omit distant units.")
+	var reusable_results: Array = [far_unit]
+	tree.get_units_in_radius_into(Vector2(32, 32), 16, reusable_results)
+	harness.check(
+		reusable_results.size() == 1 and reusable_results[0] == near_unit,
+		"Quadtree queries reuse and replace caller-provided result buffers."
+	)
+	var quadrant_count = tree._quadrants.size()
+	tree.clear()
+	harness.check_equal(
+		tree._quadrants.size(), quadrant_count, "Clearing the quadtree preserves its subdivision."
+	)
+	tree.add_body(near_unit)
+	harness.check(
+		tree.get_units_in_radius(Vector2(32, 32), 16).has(near_unit),
+		"Rebuilt quadtree branches return bodies after a clear."
+	)
 
+	tree.clear()
 	near_unit.free()
 	middle_unit.free()
 	far_unit.free()

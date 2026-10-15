@@ -3,6 +3,8 @@ extends "res://goap/goap_system/action_contract.gd"
 const teleport_time = 3
 const teleport_max_distance = 100
 
+var _collision_candidates: Array = []
+
 
 func get_class_name() -> String:
 	return "MoveAction"
@@ -61,45 +63,34 @@ func in_bounds(target_point: Vector2) -> bool:
 func move(unit, destiny):
 	if unit.moves and not unit.agent.get_state("is_stunned"):
 		unit.current_destiny = destiny
-		var current_speed = Modifiers.get_value(unit, "speed")
+		var current_speed = max(Modifiers.get_value(unit, "speed"), 0.0)
 		calc_step(unit, current_speed)
-		var animations = unit.get_node_or_null("animations")
-		if animations and "speed_scale" in animations:
-			animations.speed_scale = current_speed / max(unit.speed, 0.0001)
 		unit.set_state("move")
 
 
 func calc_step(unit, speed):
-	if speed > 0:
-		var distance = unit.current_destiny - unit.global_position
+	var distance = unit.current_destiny - unit.global_position
+	if speed > 0 and distance.length_squared() > 0:
 		unit.angle = distance.angle()
-		unit.current_step = Vector2(speed * cos(unit.angle), speed * sin(unit.angle))
+		unit.current_step = distance.normalized() * speed
 		unit.mirror_look_at(unit.current_destiny)
+	else:
+		unit.current_step = Vector2.ZERO
+	var animations: AnimationPlayer = unit.animations
+	if animations:
+		animations.speed_scale = speed / max(unit.speed, 0.0001)
 
 
 func step(unit, delta):
-	var velocity = unit.current_step
-	if (
-		Goap.use_native_movement
-		and Goap.use_native_pathfinding
-		and unit.advance_with_navigation(delta)
-	):
-		velocity = unit.current_step
-
-	var motion = velocity * delta
-	if not Goap.use_native_blocking:
-		motion = _resolve_legacy_blocking(unit, motion)
-
-	if unit is CharacterBody2D:
-		if Goap.use_native_movement:
-			unit.velocity = motion / delta if delta > 0 else Vector2.ZERO
-			unit.move_and_slide()
-		elif Goap.use_native_blocking:
-			unit.move_and_collide(motion)
-		else:
-			unit.global_position += motion
-	else:
-		unit.global_position += motion
+	if delta <= 0:
+		return
+	calc_step(unit, max(Modifiers.get_value(unit, "speed"), 0.0))
+	var motion = unit.current_step * delta
+	var distance_to_destination = unit.current_destiny - unit.global_position
+	if motion.length_squared() > distance_to_destination.length_squared():
+		motion = distance_to_destination
+	motion = _resolve_blocking(unit, motion)
+	unit.global_position += motion
 
 
 func on_move_requested(agent, delta: float) -> void:
@@ -107,32 +98,32 @@ func on_move_requested(agent, delta: float) -> void:
 		step(agent.get_unit(), delta)
 
 
-func _resolve_legacy_blocking(unit, motion: Vector2) -> Vector2:
-	if motion == Vector2.ZERO or _can_move_to(unit, motion):
+func _resolve_blocking(unit, motion: Vector2) -> Vector2:
+	if motion == Vector2.ZERO:
 		return motion
-
-	var resolved_motion := Vector2.ZERO
-	var horizontal_motion := Vector2(motion.x, 0)
-	var vertical_motion := Vector2(0, motion.y)
-	if (
-		horizontal_motion != Vector2.ZERO
-		and _can_move_to(unit, resolved_motion + horizontal_motion)
-	):
-		resolved_motion += horizontal_motion
-	if vertical_motion != Vector2.ZERO and _can_move_to(unit, resolved_motion + vertical_motion):
-		resolved_motion += vertical_motion
+	var query_radius = motion.length() + unit.collision_radius + Collisions.max_collision_extent
+	Collisions.get_units_in_radius_into(
+		unit.global_position + unit.collision_position, query_radius, _collision_candidates
+	)
+	var resolved_motion = motion
+	if not _is_move_clear(unit, motion):
+		resolved_motion = Vector2.ZERO
+		var horizontal_motion := Vector2(motion.x, 0)
+		var vertical_motion := Vector2(0, motion.y)
+		if horizontal_motion != Vector2.ZERO and _is_move_clear(unit, horizontal_motion):
+			resolved_motion += horizontal_motion
+		if (
+			vertical_motion != Vector2.ZERO
+			and _is_move_clear(unit, resolved_motion + vertical_motion)
+		):
+			resolved_motion += vertical_motion
+	_collision_candidates.clear()
 	return resolved_motion
 
 
-func _can_move_to(unit, motion: Vector2) -> bool:
+func _is_move_clear(unit, motion: Vector2) -> bool:
 	var destination = unit.global_position + unit.collision_position + motion
-	var search_radius = (
-		motion.length()
-		+ unit.collision_radius
-		+ Collisions.max_collision_radius
-		+ Collisions.tile_size
-	)
-	for other in Collisions.get_units_in_radius(destination, search_radius):
+	for other in _collision_candidates:
 		if other == unit or other.dead or not other.collide:
 			continue
 		var other_position = other.global_position + other.collision_position
@@ -159,8 +150,8 @@ func stop(unit):
 		unit.final_destiny = Vector2.ZERO
 	unit.current_destiny = Vector2.ZERO
 	unit.set_state("idle")
-	var animations = unit.get_node_or_null("animations")
-	if animations and "speed_scale" in animations:
+	var animations: AnimationPlayer = unit.animations
+	if animations:
 		animations.speed_scale = 1.0
 
 

@@ -12,9 +12,7 @@ class TestMap:
 
 
 func run(harness) -> void:
-	# Use cloned grids because the pathfinder mutates node search state during each solve.
 	var old_map = WorldState.get_state("map")
-	var old_native_pathfinding = Goap.use_native_pathfinding
 	var grid = Pathfinder.GridGD.new().Grid.new(5, 5)
 	var finder = Pathfinder.JumpPointFinder.new()
 	var open_path = finder.findPath(0, 0, 4, 4, grid.clone())
@@ -43,21 +41,26 @@ func run(harness) -> void:
 	var map = TestMap.new()
 	harness.add_child(map)
 	WorldState.set_state("map", map)
-	# Exercise the public backend selector: custom search works, while the empty native map
-	# correctly produces no route.
+	# Repeated finds reuse the same grid and reset its mutable search state.
 	var navigate_action = NavigateAction.new()
 	navigate_action.path_grid = Pathfinder.GridGD.new().Grid.new(5, 5)
 	navigate_action.path_finder = finder
-	Goap.use_native_pathfinding = false
 	harness.check(
 		not navigate_action.find(Vector2(96, 96), Vector2(224, 224)).is_empty(),
-		"Legacy navigation switch dispatches to the custom pathfinder."
+		"Navigation uses the custom jump-point pathfinder."
 	)
-	Goap.use_native_pathfinding = true
+	var start_node = navigate_action.path_grid.getNodeAt(1, 1)
 	harness.check(
-		navigate_action.find(Vector2(96, 96), Vector2(224, 224)).is_empty(),
-		"Native navigation switch dispatches to Godot's navigation map."
+		not start_node.opened and not start_node.closed and start_node.parent == null,
+		"Completed searches reset only the nodes they visited."
+	)
+	harness.check(
+		not navigate_action.find(Vector2(32, 32), Vector2(288, 288)).is_empty(),
+		"Navigation supports paths that start at the grid boundary."
+	)
+	harness.check(
+		not navigate_action.find(Vector2(224, 224), Vector2(96, 96)).is_empty(),
+		"Jump-point search state resets before reusing the path grid."
 	)
 	map.free()
 	WorldState.set_state("map", old_map)
-	Goap.use_native_pathfinding = old_native_pathfinding

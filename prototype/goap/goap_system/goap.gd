@@ -14,10 +14,6 @@ var _action_planner = preload("res://goap/goap_system/planner.gd").new()
 var _actions = preload("res://goap/game_logic/action_registry.gd").new()
 var _goals = preload("res://goap/game_logic/goal_registry.gd").new()
 
-@export var use_native_movement := true
-@export var use_native_blocking := true
-@export var use_native_pathfinding := false
-
 var move
 var navigation
 

@@ -17,68 +17,77 @@ class TestUnit:
 	extends Node2D
 	var moves := true
 	var current_step := Vector2.ZERO
+	var current_destiny := Vector2.ZERO
+	var speed := 10.0
+	var level := 1
+	var current_modifiers = Modifiers.new_modifiers()
+	var animations: AnimationPlayer
 	var collision_position := Vector2.ZERO
 	var collision_radius := 8.0
 	var collide := false
 	var dead := false
 	var agent = TestAgent.new()
 
-	func advance_with_navigation(_delta: float) -> bool:
-		return false
+	func mirror_look_at(_point: Vector2) -> void:
+		pass
+
+	func set_state(_new_state: String) -> void:
+		pass
 
 
 func run(harness) -> void:
-	# Restore singleton switches and the shared quadtree after testing each backend.
-	var old_native_movement = Goap.use_native_movement
-	var old_native_blocking = Goap.use_native_blocking
-	var old_native_pathfinding = Goap.use_native_pathfinding
+	# Restore the shared quadtree after testing.
 	var old_quadtree = Collisions.quad
+	var old_max_collision_extent = Collisions.max_collision_extent
 	var unit = TestUnit.new()
 	unit.global_position = Vector2(32, 32)
-	unit.current_step = Vector2(10, 0)
+	unit.current_destiny = Vector2(200, 32)
+	Collisions.quad = Quadtree.new(
+		Collisions, Rect2(Vector2.ZERO, Vector2(256, 256)), 16, 4
+	)
+	Collisions.quad.add_body(unit)
 
-	# Keep native path-following disabled here so this isolates physics-body movement.
-	Goap.use_native_movement = true
-	Goap.use_native_blocking = true
-	Goap.use_native_pathfinding = false
 	Goap.get_action("MoveAction").step(unit, 1.0)
 	harness.check_equal(
 		unit.global_position,
 		Vector2(42, 32),
-		"Native movement advances units by velocity and delta."
+		"Movement advances current_step by speed and delta."
 	)
 
-	Goap.use_native_movement = false
-	Goap.use_native_blocking = true
+	Modifiers.add(unit, "speed", "test_speed", 5.0)
 	Goap.get_action("MoveAction").step(unit, 1.0)
 	harness.check_equal(
 		unit.global_position,
-		Vector2(52, 32),
-		"Legacy movement advances without relying on native movement."
+		Vector2(57, 32),
+		"Movement recalculates current_step with active speed modifiers."
 	)
+	Modifiers.remove(unit, "speed", "test_speed")
+	unit.global_position = Vector2(32, 32)
 
 	var blocker = TestUnit.new()
 	blocker.collide = true
-	blocker.global_position = Vector2(66, 32)
-	Collisions.max_collision_radius = blocker.collision_radius
+	blocker.global_position = Vector2(60, 32)
+	blocker.collision_position = Vector2(6, 0)
+	Collisions.max_collision_extent = (
+		blocker.collision_position.length() + blocker.collision_radius
+	)
 	Collisions.quad = Quadtree.new(Collisions, Rect2(Vector2.ZERO, Vector2(256, 256)), 16, 4)
 	Collisions.quad.add_body(unit)
 	Collisions.quad.add_body(blocker)
-	Goap.use_native_blocking = false
-	# The blocker stays indexed in the quadtree; radius filtering uses its updated position.
+	Goap.get_action("MoveAction").step(unit, 1.0)
 	Goap.get_action("MoveAction").step(unit, 1.0)
 	harness.check_equal(
 		unit.global_position,
-		Vector2(52, 32),
-		"Legacy quadtree blocking prevents movement into another unit."
+		Vector2(42, 32),
+		"Quadtree blocking prevents movement into another unit."
 	)
 
 	blocker.global_position = Vector2(220, 220)
 	Goap.get_action("MoveAction").step(unit, 1.0)
 	harness.check_equal(
 		unit.global_position,
-		Vector2(62, 32),
-		"Legacy quadtree blocking permits unobstructed movement."
+		Vector2(52, 32),
+		"Quadtree blocking permits unobstructed movement."
 	)
 	harness.check(
 		Goap.get_action("MoveAction") != null,
@@ -88,6 +97,4 @@ func run(harness) -> void:
 	unit.free()
 	blocker.free()
 	Collisions.quad = old_quadtree
-	Goap.use_native_movement = old_native_movement
-	Goap.use_native_blocking = old_native_blocking
-	Goap.use_native_pathfinding = old_native_pathfinding
+	Collisions.max_collision_extent = old_max_collision_extent

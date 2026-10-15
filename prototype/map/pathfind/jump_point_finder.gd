@@ -22,6 +22,20 @@ class JumpPointFinder:
 	var grid
 	var OnlyWhenNoObstacles = 4
 	var heuristic = "euclidean"
+	var _visited_nodes: Array = []
+
+	func _init():
+		openList = Heap.new("jpfCmp")
+
+	func _reset_search_state() -> void:
+		for node in _visited_nodes:
+			node.f = 0
+			node.g = 0
+			node.h = 0
+			node.opened = false
+			node.closed = false
+			node.parent = null
+		_visited_nodes.clear()
 	
 	func euclidean(dx, dy):
 		return sqrt(dx * dx + dy * dy)
@@ -33,7 +47,8 @@ class JumpPointFinder:
 # */
 		
 	func findPath(startX, startY, endX, endY, _grid):
-		openList = Heap.new("jpfCmp")
+		_reset_search_state()
+		openList.clear()
 		startNode = _grid.getNodeAt(startX, startY)
 		endNode = _grid.getNodeAt(endX, endY)
 		grid = _grid
@@ -46,6 +61,7 @@ class JumpPointFinder:
 		# push the start node into the open list
 		openList.push(startNode)
 		startNode.opened = true
+		_visited_nodes.append(startNode)
 		
 		# while the open list is not empty
 		while (!openList.is_empty()):
@@ -55,11 +71,16 @@ class JumpPointFinder:
 			node.closed = true
 			
 			if (node == endNode):
-				return expandPath(_backtrace(endNode))
+				var path = expandPath(_backtrace(endNode))
+				_reset_search_state()
+				openList.clear()
+				return path
 			
 			_identifySuccessors(node)
 		
 		# fail to find the path
+		_reset_search_state()
+		openList.clear()
 		return []
 	
 #/**
@@ -109,6 +130,7 @@ class JumpPointFinder:
 					if (!jumpNode.opened):
 						openList.push(jumpNode)
 						jumpNode.opened = true
+						_visited_nodes.append(jumpNode)
 					else:
 						openList.updateItem(jumpNode)
 	

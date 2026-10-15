@@ -3,7 +3,6 @@ extends "res://goap/goap_system/action_contract.gd"
 var path_grid
 var path_finder
 var path_line
-var navigation_region: NavigationRegion2D
 
 
 func get_class_name() -> String:
@@ -98,11 +97,10 @@ func stop(unit):
 
 func setup_pathfind():
 	var map = WorldState.get_state("map")
-	var walls_size = Vector2(
-		floor(map.size.x / map.tile_size) + 1, floor(map.size.y / map.tile_size) + 1
-	)
+	var grid_width = int(floor(map.size.x / map.tile_size)) + 1
+	var grid_height = int(floor(map.size.y / map.tile_size)) + 1
 	var grid = Finder.GridGD.new().Grid
-	path_grid = grid.new(walls_size.x, walls_size.y)
+	path_grid = grid.new(grid_width, grid_height)
 	var walls_tile = map.walls
 	for cell in walls_tile.get_used_cells():
 		var team = "blue" if walls_tile.get_cell_source_id(cell) == 0 else "red"
@@ -117,53 +115,10 @@ func setup_pathfind():
 	for building in WorldState.get_state("neutral_buildings"):
 		var pos = (building.global_position / map.tile_size).floor()
 		path_grid.setWalkableAt(pos.x, pos.y, false)
-	setup_native_navigation(map)
 	path_finder = Finder.JumpPointFinder.new()
 	path_line = Line2D.new()
 	path_line.name = "unit_path_line"
 	map.fog.add_sibling(path_line)
-
-
-func setup_native_navigation(map):
-	if is_instance_valid(navigation_region):
-		navigation_region.queue_free()
-	var navigation_polygon = NavigationPolygon.new()
-	var tile_size = map.tile_size
-	var vertices := PackedVector2Array()
-	var polygons: Array[PackedInt32Array] = []
-	for y in range(path_grid.height):
-		for x in range(path_grid.width):
-			if not path_grid.isWalkableAt(x, y):
-				continue
-			var left = x * tile_size
-			var top = y * tile_size
-			var right = min(left + tile_size, map.size.x)
-			var bottom = min(top + tile_size, map.size.y)
-			if right <= left or bottom <= top:
-				continue
-			var first_vertex = vertices.size()
-			vertices.append_array(
-				PackedVector2Array(
-					[
-						Vector2(left, top),
-						Vector2(right, top),
-						Vector2(right, bottom),
-						Vector2(left, bottom)
-					]
-				)
-			)
-			polygons.append(
-				PackedInt32Array(
-					[first_vertex, first_vertex + 1, first_vertex + 2, first_vertex + 3]
-				)
-			)
-	navigation_polygon.vertices = vertices
-	for polygon in polygons:
-		navigation_polygon.add_polygon(polygon)
-	navigation_region = NavigationRegion2D.new()
-	navigation_region.name = "generated_navigation_region"
-	navigation_region.navigation_polygon = navigation_polygon
-	map.add_child(navigation_region)
 
 
 func setup_unit_path(unit, path):
@@ -188,8 +143,6 @@ func new_lane_path(lane, team):
 
 
 func find(from: Vector2, to: Vector2) -> Array:
-	if Goap.use_native_pathfinding:
-		return find_native_path(from, to)
 	return find_custom_path(from, to)
 
 
@@ -198,9 +151,14 @@ func find_custom_path(from: Vector2, to: Vector2) -> Array:
 	var half = WorldState.get_state("map").half_tile_size
 	var start_cell = (from / cell_size).floor()
 	var target_cell = (to / cell_size).floor()
-	if in_limits(start_cell) and in_limits(target_cell):
+	if (
+		in_limits(start_cell)
+		and in_limits(target_cell)
+		and path_grid.isWalkableAt(start_cell.x, start_cell.y)
+		and path_grid.isWalkableAt(target_cell.x, target_cell.y)
+	):
 		var solved_path = path_finder.findPath(
-			start_cell.x, start_cell.y, target_cell.x, target_cell.y, path_grid.clone()
+			start_cell.x, start_cell.y, target_cell.x, target_cell.y, path_grid
 		)
 		var path = []
 		for index in range(1, solved_path.size()):
@@ -210,26 +168,10 @@ func find_custom_path(from: Vector2, to: Vector2) -> Array:
 	return []
 
 
-func find_native_path(from: Vector2, to: Vector2) -> Array:
-	var map = WorldState.get_state("map")
-	if not map or not map.get_world_2d():
-		return []
-	var nav_map = map.get_world_2d().navigation_map
-	if nav_map == null:
-		return []
-	var path = NavigationServer2D.map_get_path(nav_map, from, to, true)
-	if path.size() <= 1:
-		return []
-	var converted = []
-	for index in range(1, path.size()):
-		converted.append(path[index])
-	return converted
-
-
 func in_limits(target_point):
 	return (
-		target_point.x > 0 and 
-		target_point.y > 0 and 
+		target_point.x >= 0 and
+		target_point.y >= 0 and
 		target_point.x < path_grid.width and 
 		target_point.y < path_grid.height
 	)
@@ -238,15 +180,6 @@ func in_limits(target_point):
 func navigate_to(unit, target_point: Vector2):
 	if not unit or target_point == Vector2.ZERO:
 		return
-	if Goap.use_native_pathfinding and Goap.use_native_movement:
-		var native_path = find_native_path(unit.global_position, target_point)
-		if not native_path.is_empty() or _is_same_tile(unit.global_position, target_point):
-			unit.current_path.clear()
-			unit.current_destiny = target_point
-			unit.final_destiny = target_point
-			unit.set_navigation_target(target_point)
-			Goap.move.move(unit, target_point)
-			return
 	var path = find(unit.global_position, target_point)
 	if not path.is_empty():
 		unit.final_destiny = target_point
@@ -256,7 +189,6 @@ func navigate_to(unit, target_point: Vector2):
 		unit.current_path.clear()
 		unit.current_destiny = target_point
 		unit.final_destiny = target_point
-		unit.set_navigation_target(target_point)
 		Goap.move.move(unit, target_point)
 
 
@@ -271,7 +203,6 @@ func start(unit, new_path):
 		var next_point = path.pop_front()
 		unit.current_path = path
 		unit.current_destiny = next_point
-		unit.set_navigation_target(next_point)
 		Goap.move.point(unit, next_point)
 
 

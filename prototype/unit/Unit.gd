@@ -102,10 +102,8 @@ var channeling_timer:Timer
 var hud:Node
 var sprites:Node
 var body:Node
+var animations: AnimationPlayer
 @onready var agent: Node = get_node_or_null("goap_agent")
-var navigation_agent: NavigationAgent2D
-var navigation_safe_velocity := Vector2.ZERO
-var has_navigation_safe_velocity := false
 
 # Experience
 var experience_timer : Timer = Timer.new()
@@ -140,53 +138,9 @@ func _ready():
 	body = get_node_or_null("sprites/body")
 	weapon = get_node_or_null("sprites/weapon")
 	projectile = get_node_or_null("sprites/weapon/projectile")
+	animations = get_node_or_null("animations") as AnimationPlayer
 	if agent and hud:
 		agent.goal_changed.connect(hud.update_goal)
-	if moves:
-		ensure_navigation_agent()
-
-
-func ensure_navigation_agent() -> NavigationAgent2D:
-	if navigation_agent == null:
-		navigation_agent = NavigationAgent2D.new()
-		navigation_agent.name = "NavigationAgent2D"
-		navigation_agent.path_desired_distance = 12.0
-		navigation_agent.target_desired_distance = 8.0
-		navigation_agent.avoidance_enabled = true
-		navigation_agent.velocity_computed.connect(_on_navigation_velocity_computed)
-		add_child(navigation_agent)
-	return navigation_agent
-
-
-func set_navigation_target(target_vector: Vector2) -> void:
-	if navigation_agent == null:
-		ensure_navigation_agent()
-	if navigation_agent:
-		has_navigation_safe_velocity = false
-		navigation_safe_velocity = Vector2.ZERO
-		navigation_agent.target_position = target_vector
-
-
-func advance_with_navigation(_delta: float) -> bool:
-	if navigation_agent == null or navigation_agent.target_position == Vector2.ZERO:
-		return false
-	if navigation_agent.is_target_reached():
-		return false
-	var next_point = navigation_agent.get_next_path_position()
-	var direction = next_point - global_position
-	if direction.length_squared() <= 0.01:
-		return false
-	var current_speed = Modifiers.get_value(self, "speed")
-	var desired_velocity = direction.normalized() * current_speed
-	navigation_agent.velocity = desired_velocity
-	current_step = navigation_safe_velocity if has_navigation_safe_velocity else desired_velocity
-	mirror_look_at(next_point)
-	return true
-
-
-func _on_navigation_velocity_computed(safe_velocity: Vector2) -> void:
-	navigation_safe_velocity = safe_velocity
-	has_navigation_safe_velocity = true
 
 
 func setup_leader_exp():
