@@ -42,7 +42,7 @@ func enter(agent):
 		point(unit, target.global_position + target.collision_position)
 	else:
 		unit.final_destiny = target.global_position
-		Goap.navigation.move(unit, target.global_position, false)
+		Goap.get_action("Navigate").move(unit, target.global_position, false)
 
 
 func on_animation_end(agent):
@@ -55,21 +55,21 @@ func on_animation_end(agent):
 			point(unit, target.global_position + target.collision_position)
 		else:
 			unit.final_destiny = target.global_position
-			Goap.navigation.move(unit, target.global_position, false)
+			Goap.get_action("Navigate").move(unit, target.global_position, false)
 	else:
-		Goap.move.stop(unit)
+		Goap.get_action("Move").stop(unit)
 
 
 func exit(agent):
 	var unit = agent.get_unit()
-	Goap.move.stop(unit)
+	Goap.get_action("Move").stop(unit)
 
 
 func point(unit, target_point: Vector2) -> void:
 	if (
 		unit.attacks
 		and not unit.agent.get_state("is_stunned")
-		and Goap.move.in_bounds(target_point)
+		and Goap.get_action("Move").in_bounds(target_point)
 	):
 		if unit.ranged and unit.weapon:
 			unit.weapon.look_at(target_point)

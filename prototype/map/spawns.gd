@@ -45,7 +45,7 @@ func create(template, lane, team, mode, point):
 	WorldState.get_state("all_units").append(unit)
 	game.selection.setup_selection(unit)
 	Collisions.setup(unit)
-	Goap.move.setup_timer(unit) # channeling timer
+	Goap.get_action("Move").setup_timer(unit) # channeling timer
 	game.ui.minimap.setup_symbol(unit)
 	if unit.type == "leader":
 		WorldState.get_state("all_leaders").append(unit)
@@ -86,10 +86,10 @@ func leaders():
 				if counter < 2: lane = "top"
 				if counter == 2: lane = "mid"
 				if counter > 2: lane = "bot"
-			var path = Goap.navigation.new_lane_path(lane, team)
+			var path = Navigation.new_lane_path(lane, team)
 			var path_start = path.pop_front()
 			var leader_node = game.spawn.create(leader_scene(leader_name), lane, team, "point_random", path_start)
-			Goap.navigation.setup_unit_path(leader_node, path)
+			Goap.get_action("Navigate").setup_unit_path(leader_node, path)
 			leader_node.setup_leader_exp()
 			if team == "red":
 				red_leaders.append(leader_node)
@@ -101,9 +101,8 @@ func leaders():
 
 
 func spawn_group_cycle():
-	Goap.get_action("ChooseTarget").apply_building_priorities()
 	leaders_cycle()
-	Goap.get_action("TaxesAction").update_taxes()
+	Goap.get_action("Taxes").update_taxes()
 	
 	for team in WorldState.teams:
 		var extra_unit = WorldState.get_state("player_extra_unit")
@@ -143,18 +142,15 @@ func pawn_scene(pawn_name):
 
 
 func send_pawn(template_name, lane, team):
-	var path = Goap.navigation.new_lane_path(lane, team)
+	var path = Navigation.new_lane_path(lane, team)
 	var path_start = path.pop_front()
 	var pawn = recycle(template_name, lane, team, path_start)
 	if not pawn:
 		pawn = game.spawn.create(pawn_scene(template_name), lane, team, "point_random", path_start)
-	Goap.navigation.setup_unit_path(pawn, path)
-	Goap.get_action("ChooseTarget").set_unit_priority(pawn)
-
+	Goap.get_action("Navigate").setup_unit_path(pawn, path)
 
 func leaders_cycle() -> void:
 	for leader in WorldState.get_state("player_leaders") + WorldState.get_state("enemy_leaders"):
-		Goap.get_action("ChooseTarget").set_unit_priority(leader)
 		var extra_unit = WorldState.get_state("player_extra_unit")
 		if leader.team == WorldState.get_state("enemy_team"):
 			extra_unit = WorldState.get_state("enemy_extra_unit")

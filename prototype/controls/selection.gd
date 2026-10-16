@@ -68,7 +68,7 @@ func select_unit(unit):
 		WorldState.set_state("selected_leader", unit)
 		game.ui.shop.update_buttons()
 		game.ui.inventories.update_buttons()
-		game.ui.unit_controls_button.disabled = false
+		game.ui.unit_control_button.disabled = false
 		game.ui.active_skills.update_buttons()
 		game.ui.leaders_icons.buttons_focus(unit)
 	else:
@@ -133,37 +133,37 @@ func control_state(point):
 func advance(unit, point):
 	if unit and unit.attacks and unit.moves and unit.is_controllable() and no_delay(unit):
 		var order_point = order(unit, point)
-		Goap.get_action("OrderAction").issue_player_order(unit, "advance", order_point)
+		Goap.get_action("Order").issue_player_order(unit, "advance", order_point)
 
 
 func attack(unit, point):
 	if unit.attacks and unit.is_controllable() and no_delay(unit):
 		var order_point = order(unit, point)
-		Goap.get_action("OrderAction").issue_player_order(unit, "attack", order_point)
+		Goap.get_action("Order").issue_player_order(unit, "attack", order_point)
 
 
 func teleport(unit, point):
 	if unit.moves and unit.is_controllable() and no_delay(unit):
 		var order_point = order(unit, point)
-		Goap.get_action("OrderAction").issue_player_order(unit, "teleport", order_point)
+		Goap.get_action("Order").issue_player_order(unit, "teleport", order_point)
 
 
 func change_lane(unit, point):
 	if unit.moves and unit.is_controllable() and no_delay(unit):
 		var order_point = order(unit, point)
-		Goap.get_action("OrderAction").issue_player_order(unit, "lane", order_point)
+		Goap.get_action("Order").issue_player_order(unit, "lane", order_point)
 
 
 func move(unit, point):
 	if unit.moves and unit.is_controllable() and no_delay(unit):
 		var order_point = order(unit, point)
-		Goap.get_action("OrderAction").issue_player_order(unit, "move", order_point)
+		Goap.get_action("Order").issue_player_order(unit, "move", order_point)
 
 
 func stand(unit):
 	if unit.is_controllable() and no_delay(unit):
 		order(unit, null)
-		Goap.get_action("OrderAction").issue_player_order(unit, "stand")
+		Goap.get_action("Order").issue_player_order(unit, "stand")
 
 
 func order(unit, point):

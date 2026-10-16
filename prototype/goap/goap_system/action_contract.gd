@@ -11,7 +11,7 @@ extends Node
 # also be used during execution to abort the plan in case the world state
 # does not allow this action anymore.
 func is_valid(_agent) -> bool:
-	return true
+	return false
 
 
 # Action Cost. This is a function so it handles situational costs, when the world
@@ -50,7 +50,3 @@ func perform(_agent, _delta) -> bool:
 # Runs once when the action ends
 func exit(_agent) :
 	pass
-
-
-func on_move_requested(agent, delta: float) -> void:
-	Goap.get_action("MoveAction").on_move_requested(agent, delta)

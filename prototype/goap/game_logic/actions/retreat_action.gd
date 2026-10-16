@@ -2,7 +2,7 @@ extends "res://goap/goap_system/action_contract.gd"
 
 
 func get_class_name():
-	return "RetreatAction"
+	return "Retreat"
 
 
 func is_valid(agent) -> bool:
@@ -31,7 +31,7 @@ func enter(agent):
 	var path = WorldState.get_state("lanes")[lane].duplicate()
 	if unit.team == "red":
 		path.reverse()
-	Goap.navigation.navigate_to(unit, path[0])
+	Goap.get_action("Navigate").navigate_to(unit, path[0])
 
 
 func on_arrive(agent):

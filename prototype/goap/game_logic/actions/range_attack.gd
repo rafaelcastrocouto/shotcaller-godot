@@ -16,7 +16,7 @@ func projectile_start(attacker, target) -> void:
 		target_position = target.global_position + target.collision_position
 		if target.dead or target.immune:
 			return
-	if not Goap.move.in_bounds(target_position):
+	if not Goap.get_action("Move").in_bounds(target_position):
 		return
 	attacker.weapon.look_at(target_position)
 	var projectile = attacker.projectile.duplicate()

@@ -6,7 +6,7 @@ const teleport_max_distance = 100
 
 
 func get_class_name() -> String:
-	return "MoveAction"
+	return "Move"
 
 
 func is_valid(agent) -> bool:
@@ -142,18 +142,18 @@ func smart(unit, target_point):
 	if not unit.agent.get_state("stunned"):
 		if target_point != Vector2.ZERO and unit.current_destiny != Vector2.ZERO:
 			unit.final_destiny = target_point
-		Goap.navigation.navigate_to(unit, target_point)
+		Goap.get_action("Navigate").navigate_to(unit, target_point)
 
 
 func teleport(unit, target_point):
 	var agent = unit.agent
 	var game = Goap.get_tree().get_current_scene()
 	var ui = game.ui
-	ui.unit_controls_panel.teleport_button.disabled = false
-	ui.unit_controls_panel.teleport_button.button_pressed = false
+	ui.unit_control_panel.teleport_button.disabled = false
+	ui.unit_control_panel.teleport_button.button_pressed = false
 	var building = Utils.closer_building(target_point, unit.team)
 	var distance = building.global_position.distance_to(target_point)
-	Goap.move.stop(unit)
+	Goap.get_action("Move").stop(unit)
 	agent.set_state("is_channeling", true)
 	var order_id = agent.get_state("player_order_id", 0)
 	var delay = Timer.new()
@@ -178,4 +178,4 @@ func teleport(unit, target_point):
 		unit.global_position = new_position
 		agent.set_state("lane", building.lane)
 		agent.set_state("player_order_complete", true)
-		Goap.navigation.resume_lane(unit)
+		Goap.get_action("Navigate").resume_lane(unit)

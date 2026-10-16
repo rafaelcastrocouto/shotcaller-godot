@@ -22,31 +22,31 @@ var attacked_timer := 2
 
 func _ready():
 	_unit = get_parent()
-	set_state("tactic", "default")
+	
 	_goals = []
-	action_changed.connect(_on_action_changed)
 	if goals_list.size() > 0:
 		for goal in goals_list:
 			_goals.append(Goap.get_goal(goal))
+	
+	action_changed.connect(_on_action_changed)
 
 	_unit.unit_reseted.connect(reset)
 	_unit.unit_arrived.connect(on_arrive)
 	_unit.unit_idle_ended.connect(on_idle_end)
 	_unit.unit_stun_ended.connect(on_stun_end)
-	_unit.unit_move_requested.connect(_on_move_requested)
-	_unit.unit_move_ended.connect(on_move_end)
+	_unit.unit_move_requested.connect(on_move_requested)
 	_unit.unit_attack_ended.connect(on_attack_end)
-	_unit.unit_attack_release.connect(
-		Goap.get_action("RangeAttack").projectile_release.bind(_unit)
-	)
+	_unit.unit_attack_release.connect(Goap.get_action("RangeAttack").projectile_release.bind(_unit))
 	_unit.unit_attack_hitted.connect(Goap.get_action("MeleeAttack").hit.bind(_unit))
 	_unit.unit_death_started.connect(on_death_started)
 	_unit.unit_died.connect(Goap.get_action("RangeAttack").clear_stuck)
 	_unit.unit_animation_ended.connect(on_animation_end)
 	_unit.unit_was_attacked.connect(was_attacked)
-	_unit.unit_arrived.connect(Goap.get_action("OrderAction").on_arrive.bind(self))
+	_unit.unit_arrived.connect(Goap.get_action("Order").on_arrive.bind(self))
 	
 	WorldState.second_elapsed.connect(on_every_second)
+	
+	set_state("tactic", "default")
 
 
 func _add_goal(goal_name: String) -> void:
@@ -233,16 +233,8 @@ func on_idle_end():
 		_get_best_goal().on_idle_end(self)
 
 
-func _on_move_requested(delta: float) -> void:
-	if has_action_function("on_move_requested"):
-		get_current_action().on_move_requested(self, delta)
-
-
-func on_move_end():
-	if has_action_function("on_move_end"):
-		get_current_action().on_move_end(self)
-	if has_goal_function("on_move_end"):
-		_get_best_goal().on_move_end(self)
+func on_move_requested(delta: float) -> void:
+	Goap.get_action("Move").on_move_requested(self, delta)
 
 
 func on_stun_end():
@@ -262,11 +254,11 @@ func on_attack_end():
 	if not _unit.attacks or _unit.target:
 		return
 	if not _unit.current_path.is_empty():
-		Goap.navigation.follow_path(_unit, _unit.current_path)
+		Goap.get_action("Navigate").follow_path(_unit, _unit.current_path)
 	elif _unit.current_destiny != Vector2.ZERO:
-		Goap.move.point(_unit, _unit.current_destiny)
+		Goap.get_action("Move").point(_unit, _unit.current_destiny)
 	else:
-		Goap.move.stop(_unit)
+		Goap.get_action("Move").stop(_unit)
 
 
 func on_death_started():
@@ -282,8 +274,8 @@ func cancel_player_order():
 
 
 func was_attacked(attacker, damage):
-	self.set_state("being_attacked", attacked_timer)
-	self.set_state("attacker", attacker)
+	set_state("being_attacked", attacked_timer)
+	set_state("attacker", attacker)
 	if has_action_function("was_attacked"):
 		get_current_action().was_attacked(self, attacker, damage)
 	if has_goal_function("was_attacked"):
@@ -291,34 +283,21 @@ func was_attacked(attacker, damage):
 
 
 func on_animation_end():
-	var being_attacked = self.get_state("being_attacked")
+	var being_attacked = get_state("being_attacked")
 	if being_attacked and being_attacked > 0:
 		being_attacked -= 1
-	else: self.set_state("attacker", null)
-	self.set_state("being_attacked", being_attacked)
+	else: set_state("attacker", null)
+	set_state("being_attacked", being_attacked)
 	if has_action_function("on_animation_end"):
 		get_current_action().on_animation_end(self)
 	if has_goal_function("on_animation_end"):
 		_get_best_goal().on_animation_end(self)
 
 
-func on_path_arrive():
-	if has_action_function("on_path_arrive"):
-		get_current_action().on_path_arrive(self)
-	if has_goal_function("on_path_arrive"):
-		_get_best_goal().on_path_arrive(self)
-
-
 func on_arrive():
 	if has_action_function("on_arrive"):
 		get_current_action().on_arrive(self)
-	var goal = _get_best_goal()
-	if goal and goal.has_method("on_arrive"):
-		goal.on_arrive(self)
-	else:
-		var arrive_goal = Goap.get_goal("ArriveAtDestination")
-		if arrive_goal:
-			arrive_goal.on_arrive(self)
+	Goap.get_goal("ArriveAtDestination").on_arrive(self)
 
 
 #func clear_orders():

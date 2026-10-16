@@ -11,7 +11,7 @@ const _pray_bonuses = [
 
 
 func get_class_name() -> String:
-	return "PrayerAction"
+	return "Pray"
 
 
 func pray_in_church(unit):

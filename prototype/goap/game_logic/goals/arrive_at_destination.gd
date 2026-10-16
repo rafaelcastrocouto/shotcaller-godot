@@ -38,9 +38,9 @@ func is_at_destination(unit) -> bool:
 func on_arrive(agent):
 	var unit = agent.get_unit()
 	if not unit.current_path.is_empty():
-		Goap.navigation.next(unit)
+		Goap.get_action("Navigate").next(unit)
 	else:
 		unit.current_path.clear()
 		agent.set_state("has_path", false)
 		agent.set_state("arrived_at_destination", true)
-		Goap.move.end(unit)
+		Goap.get_action("Move").end(unit)

@@ -11,6 +11,7 @@ var tile_size := 64
 var half_tile_size := tile_size / 2
 var current_map : Node2D
 
+
 func create_quadtree(bounds, splitThreshold, splitLimit, currentSplit = 0):
 	return Quadtree.new(self, bounds, splitThreshold, splitLimit, currentSplit)
 

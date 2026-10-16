@@ -29,10 +29,10 @@ func is_valid(agent) -> bool:
 		return false
 
 	if unit.current_path.is_empty() and unit.current_destiny == Vector2.ZERO:
-		var path = Goap.navigation.new_lane_path(lane, unit.team)
+		var path = Navigation.new_lane_path(lane, unit.team)
 		if path.is_empty():
 			return false
-		Goap.navigation.setup_unit_path(unit, path)
+		Goap.get_action("Navigate").setup_unit_path(unit, path)
 
 	agent.set_state("has_path", not unit.current_path.is_empty())
 	return not unit.current_path.is_empty() or unit.current_destiny != Vector2.ZERO
@@ -51,12 +51,3 @@ func on_arrive(agent) -> void:
 	Goap.get_goal("ArriveAtDestination").on_arrive(agent)
 	if route_finished:
 		agent.set_state("lane_route_finished", true)
-
-
-func build_leaders() -> void:
-	var player_leaders = WorldState.get_state("player_leaders")
-	var enemy_leaders = WorldState.get_state("enemy_leaders")
-	Goap.get_action("ChooseTarget").build_leader_priorities(player_leaders, enemy_leaders)
-	var leaders = player_leaders + enemy_leaders
-	for leader in leaders:
-		Goap.get_action("ChooseTarget").set_unit_priority(leader)

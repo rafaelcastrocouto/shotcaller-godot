@@ -89,7 +89,6 @@ var attack_hit_radius = 24
 var next_event:String = "" # "move" or "arrive"
 var after_arive:String = "stop" # "attack" "conquer" "pray" "cut"
 var state:String = "idle" # "move", "attack", "death"
-var priority = ["leader", "pawn", "building"]
 var wait_time:int = 0
 var gold = 0
 
@@ -404,11 +403,11 @@ func take_hit(attacker, incoming_projectile = null, hit_modifiers = {}) -> void:
 		if self.type == "building" and self.subtype == "backwood":
 			var mod_hp = Modifiers.get_value(self, "hp")
 			var rate = float(self.current_hp) / float(mod_hp)
-			var tax_action = Goap.get_action("TaxesAction")
+			var tax_action = Goap.get_action("Taxes")
 			var tax = tax_action.get_tax_for_team(self.team)
 			var limit = tax_action.tax_conquer_limit[tax]
 			if rate <= limit:
-				Goap.get_action("ConquerAction").lose_building(self)
+				Goap.get_action("Conquer").lose_building(self)
 
 		if self.current_hp <= 0:
 			self.current_hp = 0

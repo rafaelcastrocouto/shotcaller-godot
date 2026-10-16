@@ -5,7 +5,7 @@ const conquer_time = 3
 
 
 func get_class_name() -> String:
-	return "ConquerAction"
+	return "Conquer"
 
 
 func conquer_building(unit):
@@ -29,7 +29,7 @@ func conquer_building(unit):
 					"camp", "outpost":
 						building.attacks = true
 					"mine":
-						Goap.get_action("MineAction").set_mine_gold(unit.team, 1)
+						Goap.get_action("Mine").set_mine_gold(unit.team, 1)
 				var game = Goap.get_tree().get_current_scene()
 				game.ui.show_select()
 
@@ -46,7 +46,7 @@ func lose_building(building):
 		"outpost":
 			building.attacks = false
 		"mine":
-			Goap.get_action("MineAction").set_mine_gold(team, 0)
+			Goap.get_action("Mine").set_mine_gold(team, 0)
 	building.setup_team("neutral")
 	if not WorldState.get_state("map").has_neutral_buildings(team):
-		Goap.get_action("TaxesAction").remove_tax(team)
+		Goap.get_action("Taxes").remove_tax(team)

@@ -21,7 +21,7 @@ func get_effects() -> Dictionary:
 
 
 func enter(agent):
-	Goap.move.stop(agent.get_unit())
+	Goap.get_action("Move").stop(agent.get_unit())
 
 
 func perform(agent, _delta) -> bool:
@@ -36,4 +36,4 @@ func exit(agent):
 	agent.set_state("is_retreating", false)
 	agent.set_state("ready_to_fight", true)
 	if WorldState.get_state("selected_unit") == unit:
-		Goap.navigation.resume_lane(agent.get_unit())
+		Goap.get_action("Navigate").resume_lane(agent.get_unit())

@@ -20,7 +20,7 @@ func get_effects() -> Dictionary:
 
 
 func enter(agent):
-	Goap.move.point(agent.get_unit(), agent.get_state("deliver_position"))
+	Goap.get_action("Move").point(agent.get_unit(), agent.get_state("deliver_position"))
 	agent.set_state("is_running", true)
 
 
@@ -57,5 +57,3 @@ func exit(agent):
 	agent.set_state("is_hiding", false)
 	agent.set_state("is_threatened", false)
 	agent.set_state("hiding_counter", 0)
-
-

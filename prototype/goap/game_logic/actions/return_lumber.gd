@@ -21,7 +21,7 @@ func perform(agent, _delta) -> bool:
 
 
 func enter(agent):
-	Goap.move.point(agent.get_unit(), agent.get_state("deliver_position"))
+	Goap.get_action("Move").point(agent.get_unit(), agent.get_state("deliver_position"))
 
 
 func on_arrive(agent):
@@ -36,4 +36,3 @@ func on_arrive(agent):
 
 func exit(agent):
 	agent.set_state("returning_wood", false)
-

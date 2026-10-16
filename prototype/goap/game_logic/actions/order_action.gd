@@ -5,7 +5,7 @@ const PLAYER_ORDER_TYPES = ["move", "advance", "attack", "lane", "teleport", "st
 
 
 func get_class_name() -> String:
-	return "OrderAction"
+	return "Order"
 
 
 func is_valid(agent) -> bool:
@@ -35,7 +35,7 @@ func resume(unit):
 func exit(agent):
 	var unit = agent.get_unit()
 	if unit and not unit.dead:
-		Goap.move.stop(unit)
+		Goap.get_action("Move").stop(unit)
 
 
 func issue_player_order(unit, order_type: String, target: Vector2 = Vector2.ZERO) -> bool:
@@ -50,7 +50,7 @@ func issue_player_order(unit, order_type: String, target: Vector2 = Vector2.ZERO
 		return true
 	var agent = unit.agent
 	agent.clear_plan()
-	Goap.move.stop(unit)
+	Goap.get_action("Move").stop(unit)
 	unit.current_path.clear()
 	agent.set_state("is_channeling", false)
 	agent.set_state("player_order_id", agent.get_state("player_order_id", 0) + 1)
@@ -67,9 +67,9 @@ func on_arrive(agent):
 	var unit = agent.get_unit()
 	match unit.after_arive:
 		"conquer":
-			Goap.get_action("ConquerAction").conquer_building(unit)
+			Goap.get_action("Conquer").conquer_building(unit)
 		"pray":
-			Goap.get_action("PrayerAction").pray_in_church(unit)
+			Goap.get_action("Pray").pray_in_church(unit)
 
 
 func execute_player_order(agent):
@@ -86,20 +86,20 @@ func execute_player_order(agent):
 func _execute_player_order(unit, order_type: String, target: Vector2, agent = null):
 	match order_type:
 		"move":
-			if Goap.move.in_bounds(target):
-				Goap.navigation.navigate_to(unit, target)
+			if Goap.get_action("Move").in_bounds(target):
+				Goap.get_action("Navigate").navigate_to(unit, target)
 			elif agent:
 				complete_player_order(agent)
 		"advance":
-			Goap.navigation.smart(unit, target)
+			Goap.get_action("Navigate").smart(unit, target)
 		"attack":
 			Goap.get_action("AttackEnemy").point(unit, target)
 		"lane":
-			Goap.navigation.change_lane(unit, target)
+			Goap.get_action("Navigate").change_lane(unit, target)
 		"teleport":
-			Goap.move.teleport(unit, target)
+			Goap.get_action("Move").teleport(unit, target)
 		"stand":
-			Goap.move.stop(unit)
+			Goap.get_action("Move").stop(unit)
 			if agent:
 				complete_player_order(agent)
 
