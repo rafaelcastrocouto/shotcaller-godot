@@ -673,10 +673,10 @@ scale = Vector2(1.6, 1.6)
 sprite_frames = SubResource("22")
 offset = Vector2(0, -15)
 
-[node name="stuck" parent="sprites" parent_id_path=PackedInt32Array(1765529208) index="2" unique_id=2024680191]
-visible = false
+[node name="weapon" parent="sprites" parent_id_path=PackedInt32Array(1765529208) index="2" unique_id=1326186926 instance=ExtResource("3")]
 
-[node name="weapon" parent="sprites" parent_id_path=PackedInt32Array(1765529208) index="3" unique_id=1326186926 instance=ExtResource("3")]
+[node name="stuck" parent="sprites" parent_id_path=PackedInt32Array(1765529208) index="3" unique_id=2024680191]
+visible = false
 
 [node name="animations" type="AnimationPlayer" parent="." index="3" unique_id=2061260795]
 libraries/ = SubResource("AnimationLibrary_p1yc5")

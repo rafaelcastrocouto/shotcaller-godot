@@ -3,7 +3,6 @@ extends "res://goap/goap_system/action_contract.gd"
 const teleport_time = 3
 const teleport_max_distance = 100
 
-var _collision_candidates: Array = []
 
 
 func get_class_name() -> String:
@@ -16,7 +15,7 @@ func is_valid(agent) -> bool:
 		unit.moves
 		and unit.state == "move"
 		and unit.current_destiny != Vector2.ZERO
-		and not agent.get_state("has_path", false)
+		and agent.get_state("has_path")
 	)
 
 
@@ -82,8 +81,7 @@ func calc_step(unit, speed):
 
 
 func step(unit, delta):
-	if delta <= 0:
-		return
+	if delta <= 0: return
 	calc_step(unit, max(Modifiers.get_value(unit, "speed"), 0.0))
 	var motion = unit.current_step * delta
 	var distance_to_destination = unit.current_destiny - unit.global_position
@@ -99,38 +97,21 @@ func on_move_requested(agent, delta: float) -> void:
 
 
 func _resolve_blocking(unit, motion: Vector2) -> Vector2:
-	if motion == Vector2.ZERO:
-		return motion
-	var query_radius = motion.length() + unit.collision_radius + Collisions.max_collision_extent
-	Collisions.get_units_in_radius_into(
-		unit.global_position + unit.collision_position, query_radius, _collision_candidates
-	)
+	if motion == Vector2.ZERO: return motion
+	
 	var resolved_motion = motion
-	if not _is_move_clear(unit, motion):
-		resolved_motion = Vector2.ZERO
-		var horizontal_motion := Vector2(motion.x, 0)
-		var vertical_motion := Vector2(0, motion.y)
-		if horizontal_motion != Vector2.ZERO and _is_move_clear(unit, horizontal_motion):
-			resolved_motion += horizontal_motion
-		if (
-			vertical_motion != Vector2.ZERO
-			and _is_move_clear(unit, resolved_motion + vertical_motion)
-		):
-			resolved_motion += vertical_motion
-	_collision_candidates.clear()
-	return resolved_motion
-
-
-func _is_move_clear(unit, motion: Vector2) -> bool:
+	
 	var destination = unit.global_position + unit.collision_position + motion
-	for other in _collision_candidates:
+	for other in Collisions.get_units_in_radius(destination, 1):
 		if other == unit or other.dead or not other.collide:
 			continue
 		var other_position = other.global_position + other.collision_position
 		var minimum_distance = unit.collision_radius + other.collision_radius
-		if destination.distance_squared_to(other_position) < minimum_distance * minimum_distance:
-			return false
-	return true
+		if destination.distance_to(other_position) < minimum_distance:
+			var diff = destination - other_position
+			resolved_motion += diff * 0.01 # small reppelling force 
+
+	return resolved_motion
 
 
 func resume(unit):

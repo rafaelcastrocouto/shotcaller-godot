@@ -219,7 +219,7 @@ func on_every_second() :
 	if has_goal_function("on_every_second"):
 		_get_best_goal().on_every_second(self)
 	
-	Goap.get_goal("EnemyDefeated").apply_damage_over_time(self)
+	_unit.apply_damage_over_time()
 
 
 func on_idle_end():

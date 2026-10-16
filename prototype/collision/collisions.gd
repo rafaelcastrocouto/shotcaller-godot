@@ -10,9 +10,6 @@ var block_template:PackedScene = preload("res://collision/blocks/block_template.
 var tile_size := 64
 var half_tile_size := tile_size / 2
 var current_map : Node2D
-var max_collision_extent := 0.0
-
-
 
 func create_quadtree(bounds, splitThreshold, splitLimit, currentSplit = 0):
 	return Quadtree.new(self, bounds, splitThreshold, splitLimit, currentSplit)
@@ -28,10 +25,6 @@ func setup_quadtree(map):
 
 func get_units_in_radius(pos: Vector2, rad: float) -> Array:
 	return quad.get_units_in_radius(pos, rad)
-
-
-func get_units_in_radius_into(pos: Vector2, rad: float, results: Array) -> Array:
-	return quad.get_units_in_radius_into(pos, rad, results)
 
 
 func create_block(x, y, team):
@@ -55,17 +48,11 @@ func setup(unit):
 		if select.shape:
 			unit.selection_radius = select.shape.radius
 	
-	var block = unit.get_node_or_null("collisions/block")
 	var block_node = unit.get_node_or_null("block")
-	if block:
-		unit.collision_position = block.position
-		if block.shape:
-			unit.collision_radius = block.shape.radius
-	elif block_node is CollisionShape2D:
-		if block_node:
-			unit.collision_position = block_node.position
-			if block_node.shape:
-				unit.collision_radius = block_node.shape.radius
+	if block_node:
+		unit.collision_position = block_node.position
+		if block_node.shape:
+			unit.collision_radius = block_node.shape.radius
 	
 	var attack = unit.get_node_or_null("collisions/attack")
 	if attack:
@@ -73,22 +60,14 @@ func setup(unit):
 		if attack.shape:
 			unit.attack_hit_radius = attack.shape.radius
 
-	if unit is CollisionObject2D:
-		unit.collision_layer = 0
-		unit.collision_mask = 0
-
-
 
 func physics_process(delta):
 	quad.clear()
-	max_collision_extent = 0.0
-	var all_units = WorldState.get_state("all_units")
 	
+	var all_units = WorldState.get_state("all_units")
 	for unit1 in all_units:
 		if unit1.collide and not unit1.dead:
 			quad.add_body(unit1)
-			var collision_extent = unit1.collision_position.length() + unit1.collision_radius
-			max_collision_extent = max(max_collision_extent, collision_extent)
 	
 	for unit1 in all_units:
 		if unit1.projectiles.size():
@@ -101,14 +80,14 @@ func physics_process(delta):
 					else:
 						if projectile.target:
 							if projectile.target.point_collision(projectile_position):
-								Goap.get_goal("EnemyDefeated").take_hit(unit1, projectile.target, projectile)
+								unit1.take_hit(projectile.target, projectile);
 						else: # pierces
-							var targets = Collisions.get_units_in_radius(projectile_position, 1) 
+							var targets = get_units_in_radius(projectile_position, 1) 
 							for target in targets:
 								if (Goap.get_action("ChooseTarget").can_hit(unit1, target) and
 										projectile.targets.find(target) < 0 and
 										target.point_collision(projectile_position) ):
-									Goap.get_goal("EnemyDefeated").take_hit(unit1, target, projectile)
+									unit1.take_hit(target, projectile)
 						# move projectile
 						if not projectile.stuck: Goap.get_action("RangeAttack").projectile_step(delta, projectile)
 		

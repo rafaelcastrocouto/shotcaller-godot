@@ -46,23 +46,9 @@ func add_body(body):
 
 
 func get_units_in_radius(center: Vector2, radius: float) -> Array:
-	return get_units_in_radius_into(center, radius, [])
+	return _get_bodies_in_radius(center, radius, [])
 
-
-func get_units_in_radius_into(center: Vector2, radius: float, result: Array) -> Array:
-	result.clear()
-	_get_bodies_in_radius(center, radius, result)
-	var radius_squared = radius * radius
-	var write_index := 0
-	for body in result:
-		if center.distance_squared_to(body.global_position) <= radius_squared:
-			result[write_index] = body
-			write_index += 1
-	result.resize(write_index)
-	return result
-
-
-func _get_bodies_in_radius(center: Vector2, radius: float, result: Array) -> void:
+func _get_bodies_in_radius(center: Vector2, radius: float, result: Array) -> Array:
 	if _quadrants.is_empty():
 		for body in _bodies:
 			result.append(body)
@@ -70,6 +56,7 @@ func _get_bodies_in_radius(center: Vector2, radius: float, result: Array) -> voi
 		for quadrant in _quadrants:
 			if quadrant._contains_circle(center, radius):
 				quadrant._get_bodies_in_radius(center, radius, result)
+	return result
 
 
 func _contains_circle(center: Vector2, radius: float) -> bool:

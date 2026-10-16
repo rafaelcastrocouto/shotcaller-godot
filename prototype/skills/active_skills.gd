@@ -207,7 +207,7 @@ func rollo_basic():
 			targets.append(unit)
 	if targets.size() >= skill_data.attributes.minimum_targets:
 		for unit in targets:
-			Goap.get_goal("EnemyDefeated").take_hit(leader, unit, null, { "damage": damage })
+			unit.take_hit(leader, null, { "damage": damage })
 	
 	return true
 
@@ -228,7 +228,7 @@ func arthur_special(effects, parameters, visualize):
 			if not targets.is_empty():
 				for unit in targets:
 					var damage = skill_data.attributes.damage_per_level * leader.level
-					Goap.get_goal("EnemyDefeated").take_hit(leader, unit, null, { "damage": damage })
+					unit.take_hit(leader, null, { "damage": damage })
 
 
 
@@ -253,7 +253,7 @@ func arthur_active(effects, parameters, visualize):
 	if targets.is_empty():
 		return true
 	for unit in targets:
-		Goap.get_goal("EnemyDefeated").take_hit(leader, unit, null, { "damage": damage })
+		unit.take_hit(leader, null, { "damage": damage })
 		unit.start_stun()
 	return true
 

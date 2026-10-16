@@ -191,7 +191,6 @@ func reset_unit():
 func set_state(s):
 	if not self.dead:
 		self.state = s
-		var animations = get_node_or_null("animations")
 		if animations:
 			animations.current_animation = s
 
@@ -376,8 +375,67 @@ func on_attack_hit():  # every melee attack animation end (0.6s for ats = 1)
 		emit_signal("unit_attack_hitted")
 
 
+func take_hit(attacker, incoming_projectile = null, hit_modifiers = {}) -> void:
+	var modifiers = Skills.hit_modifiers(attacker, self, incoming_projectile, hit_modifiers)
+
+	if incoming_projectile:
+		if not modifiers.pierce:
+			Goap.get_action("RangeAttack").projectile_stuck(attacker, self, incoming_projectile)
+
+		if incoming_projectile.targets != null and incoming_projectile.targets.find(self) < 0:
+			incoming_projectile.targets.append(self)
+
+	if not self.dead and not self.immune:
+		var attack_damage = 0
+		if not modifiers.dodge:
+			attack_damage = max(1, modifiers.damage - Modifiers.get_value(self, "defense"))
+			self.current_hp -= attack_damage
+			attacker.attack_count += 1
+			if attacker.type == "leader":
+				self.last_attacker = attacker
+				self.assist_candidates[attacker] = Time.get_ticks_msec()
+
+		if not modifiers.counter:
+			self.was_attacked(attacker, attack_damage)
+
+		if self.hud:
+			self.hud.update_hpbar()
+
+		if self.type == "building" and self.subtype == "backwood":
+			var mod_hp = Modifiers.get_value(self, "hp")
+			var rate = float(self.current_hp) / float(mod_hp)
+			var tax_action = Goap.get_action("TaxesAction")
+			var tax = tax_action.get_tax_for_team(self.team)
+			var limit = tax_action.tax_conquer_limit[tax]
+			if rate <= limit:
+				Goap.get_action("ConquerAction").lose_building(self)
+
+		if self.current_hp <= 0:
+			self.current_hp = 0
+			self.die()
+			if self.type == "leader":
+				var player_team = WorldState.get_state("player_team")
+				if self.team == player_team:
+					WorldState.set_state("player_deaths", WorldState.get_state("player_deaths") + 1)
+				else:
+					WorldState.set_state("enemy_deaths", WorldState.get_state("enemy_deaths") + 1)
+				if attacker.team == player_team:
+					WorldState.set_state("player_kills", WorldState.get_state("player_kills") + 1)
+				else:
+					WorldState.set_state("enemy_kills", WorldState.get_state("enemy_kills") + 1)
+
+
+
 func was_attacked(attacker, _damage):
 	unit_was_attacked.emit(attacker, _damage)
+
+
+func apply_damage_over_time() -> void:
+	if not self.dead: 
+		var dot_effects = Modifiers.get_dot(self)
+		if dot_effects:
+			for dot in dot_effects:
+				self.take_hit(dot.attacker, null, {"damage": dot.damage})
 
 
 func on_attack_end(): # animation end of all attacks
@@ -407,6 +465,7 @@ func stun_start():
 	self.agent.set_state("is_stunned", true)
 	self.agent.set_state("stunned", true)
 	self.agent.set_state("is_channeling", false)
+	# cancels teleport
 	if self.agent.get_state("player_order", {}).get("type", "") == "teleport":
 		self.agent.set_state("player_order_id", self.agent.get_state("player_order_id", 0) + 1)
 	self.set_state("stun")
@@ -452,7 +511,6 @@ func hide_in_map():
 	self.global_position = Vector2(-1000, -1000)
 	self.hide()
 	self.state = "dead"
-	var animations = get_node_or_null("animations")
 	if animations:
 		animations.current_animation = "[stop]"
 

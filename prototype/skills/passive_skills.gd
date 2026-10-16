@@ -58,7 +58,7 @@ func hit_modifiers(attacker, target, projectile, modifiers):
 		if not modifiers.counter:
 			if "counter" in target_skills and not attacker.ranged:
 				modifiers.damage = target_skills.counter
-				Goap.get_goal("EnemyDefeated").take_hit(target, attacker, projectile, modifiers)
+				attacker.take_hit(target, projectile, modifiers)
 			
 	if attacker.display_name in leader:
 		var attacker_skills = leader[attacker.display_name]
