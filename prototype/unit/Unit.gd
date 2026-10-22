@@ -59,6 +59,7 @@ var current_destiny:Vector2 = Vector2.ZERO
 var final_destiny:Vector2 = Vector2.ZERO
 var current_path:Array = []
 
+
 # COLLISION
 @export var collide:bool = false
 var collision_radius = 0
@@ -87,7 +88,6 @@ var attack_hit_radius = 24
 
 # BEHAVIOR
 var next_event:String = "" # "move" or "arrive"
-var after_arive:String = "stop" # "attack" "conquer" "pray" "cut"
 var state:String = "idle" # "move", "attack", "death"
 var wait_time:int = 0
 var gold = 0
@@ -451,7 +451,6 @@ func heal(heal_hp):
 
 func channel_start(time):
 	self.agent.set_state("is_channeling" , true)
-	self.agent.set_state("has_player_command", true)
 	if self.channeling_timer.time_left > 0:
 		self.channeling_timer.stop()
 	self.channeling_timer.wait_time = time

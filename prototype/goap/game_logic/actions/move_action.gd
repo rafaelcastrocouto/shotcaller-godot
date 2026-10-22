@@ -84,9 +84,12 @@ func step(unit, delta):
 	if delta <= 0: return
 	calc_step(unit, max(Modifiers.get_value(unit, "speed"), 0.0))
 	var motion = unit.current_step * delta
-	var distance_to_destination = unit.current_destiny - unit.global_position
-	if motion.length_squared() > distance_to_destination.length_squared():
-		motion = distance_to_destination
+	var speed2 = motion.length_squared()
+	# if too fast check if won't move after destiny
+	if speed2 > 1:
+		var distance_to_destination = unit.current_destiny - unit.global_position
+		if speed2 > distance_to_destination.length_squared():
+			motion = distance_to_destination
 	motion = _resolve_blocking(unit, motion)
 	unit.global_position += motion
 
@@ -127,8 +130,8 @@ func end(unit):
 
 func stop(unit):
 	unit.current_step = Vector2.ZERO
-	if unit.current_destiny == unit.final_destiny:
-		unit.final_destiny = Vector2.ZERO
+	unit.final_destiny = Vector2.ZERO
+	unit.agent.set_state("player_order_complete", true)
 	unit.current_destiny = Vector2.ZERO
 	unit.set_state("idle")
 	var animations: AnimationPlayer = unit.animations
@@ -177,5 +180,4 @@ func teleport(unit, target_point):
 
 		unit.global_position = new_position
 		agent.set_state("lane", building.lane)
-		agent.set_state("player_order_complete", true)
 		Goap.get_action("Navigate").resume_lane(unit)

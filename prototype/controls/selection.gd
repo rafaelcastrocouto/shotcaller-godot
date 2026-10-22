@@ -10,6 +10,7 @@ func _ready():
 func input(event):
 	var point = CraftyCamera.get_global_mouse_position()
 	var selected_unit = WorldState.get_state("selected_unit")
+	
 	# KEYBOARD
 	if event is InputEventKey:
 		if not event.is_pressed():
@@ -30,12 +31,12 @@ func input(event):
 			MOUSE_BUTTON_LEFT:
 				select(point)
 			MOUSE_BUTTON_RIGHT:
-				control_state(point)
+				control_state_order(point)
 	
 	# TOUCH SELECTION
 	if event is InputEventScreenTouch and not event.is_pressed(): 
 		if selected_unit:
-			control_state(event.position)
+			control_state_order(event.position)
 		else:
 			select(event.position)
 
@@ -55,15 +56,6 @@ func select_unit(unit):
 	deselect()
 	WorldState.set_state("selected_unit", unit)
 	
-	if unit.is_controllable():
-		if unit.moves: 
-			if unit.attacks: 
-				game.control_state = "advance"
-			else:
-				game.control_state = "move"
-		elif unit.attacks:
-				game.control_state = "attack"
-					
 	if unit.is_controllable() and unit.type == "leader":
 		WorldState.set_state("selected_leader", unit)
 		game.ui.shop.update_buttons()
@@ -119,8 +111,20 @@ func no_delay(unit):
 	return unit.curr_control_delay <= 0 
 
 
-func control_state(point):
+func control_state_order(point):
 	var selected_unit = WorldState.get_state("selected_unit")
+	
+	if selected_unit.is_controllable():
+		if selected_unit.moves: 
+			game.control_state = "move"
+		elif selected_unit.attacks: # controllable towers and buildings
+			game.control_state = "attack"
+	
+	if selected_unit.attacks:
+		var target_unit = get_sel_unit_at_point(Vector2(point))
+		if (target_unit and target_unit.team != selected_unit.team): 
+			game.control_state = "attack"
+	
 	match game.control_state:
 		"selection": deselect()
 		"teleport": teleport(selected_unit, point)
@@ -132,65 +136,29 @@ func control_state(point):
 
 func advance(unit, point):
 	if unit and unit.attacks and unit.moves and unit.is_controllable() and no_delay(unit):
-		var order_point = order(unit, point)
-		Goap.get_action("Order").issue_player_order(unit, "advance", order_point)
+		Goap.get_action("Order").issue_player_order(unit, "advance", point)
 
 
 func attack(unit, point):
 	if unit.attacks and unit.is_controllable() and no_delay(unit):
-		var order_point = order(unit, point)
-		Goap.get_action("Order").issue_player_order(unit, "attack", order_point)
+		Goap.get_action("Order").issue_player_order(unit, "attack", point)
 
 
 func teleport(unit, point):
 	if unit.moves and unit.is_controllable() and no_delay(unit):
-		var order_point = order(unit, point)
-		Goap.get_action("Order").issue_player_order(unit, "teleport", order_point)
+		Goap.get_action("Order").issue_player_order(unit, "teleport", point)
 
 
 func change_lane(unit, point):
 	if unit.moves and unit.is_controllable() and no_delay(unit):
-		var order_point = order(unit, point)
-		Goap.get_action("Order").issue_player_order(unit, "lane", order_point)
+		Goap.get_action("Order").issue_player_order(unit, "lane", point)
 
 
 func move(unit, point):
 	if unit.moves and unit.is_controllable() and no_delay(unit):
-		var order_point = order(unit, point)
-		Goap.get_action("Order").issue_player_order(unit, "move", order_point)
+		Goap.get_action("Order").issue_player_order(unit, "move", point)
 
 
 func stand(unit):
 	if unit.is_controllable() and no_delay(unit):
-		order(unit, null)
 		Goap.get_action("Order").issue_player_order(unit, "stand")
-
-
-func order(unit, point):
-	unit.after_arive = "stop"
-	if point:
-		var building = Utils.get_building(point)
-		if building:
-			var opponent = unit.opponent_team()
-			match building.team:
-				# attack enemy buildings
-				opponent: unit.after_arive = "attack"
-				# conquer neutral buildings
-				"neutral":
-					point = front_door_point(building)
-					unit.after_arive = "conquer"
-				unit.team:
-					point = front_door_point(building)
-					# stop next to friendly buildings
-					unit.after_arive = "stop"
-					# pray on friendly churches
-					if building.display_name == "church":
-						unit.after_arive = "pray"
-		
-		return point
-
-
-func front_door_point(building):
-	var point = building.global_position
-	point.y += WorldState.get_state("map").tile_size/2
-	return point

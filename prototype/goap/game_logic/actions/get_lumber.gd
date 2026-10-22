@@ -30,7 +30,6 @@ func perform(agent, _delta) -> bool:
 
 func enter(agent):
 	var unit = agent.get_unit()
-	unit.agent.set_state("has_player_command", true)
 	var closest_tree = agent.get_state("closest_tree")
 	Goap.get_action("Move").point(unit, closest_tree)
 
@@ -45,5 +44,4 @@ func on_arrive(agent):
 	unit.channeling_timer.start()
 	# cut animation end
 	await unit.channeling_timer.timeout
-	unit.agent.set_state("has_player_command", true)
 	agent.set_state("has_wood",true)

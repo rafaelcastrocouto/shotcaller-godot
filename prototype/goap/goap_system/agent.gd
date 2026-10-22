@@ -247,12 +247,6 @@ func on_stun_end():
 func on_attack_end():
 	if has_action_function("on_attack_end"):
 		get_current_action().on_attack_end(self)
-	if has_goal_function("on_attack_end"):
-		_get_best_goal().on_attack_end(self)
-	if get_state("player_order", {}).get("type", "") == "attack":
-		set_state("player_order_attack_ended", true)
-	if not _unit.attacks or _unit.target:
-		return
 	if not _unit.current_path.is_empty():
 		Goap.get_action("Navigate").follow_path(_unit, _unit.current_path)
 	elif _unit.current_destiny != Vector2.ZERO:
@@ -268,8 +262,7 @@ func on_death_started():
 func cancel_player_order():
 	clear_plan()
 	erase_state("player_order")
-	set_state("player_order_complete", false)
-	set_state("player_order_attack_ended", false)
+	set_state("player_order_complete", true)
 	set_state("has_player_command", false)
 
 

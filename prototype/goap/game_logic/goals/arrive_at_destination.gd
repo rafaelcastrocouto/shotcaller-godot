@@ -30,7 +30,7 @@ func is_at_destination(unit) -> bool:
 	if not unit or not unit.agent:
 		return false
 	var offset = 0
-	if not unit.target and not unit.agent.get_state("has_player_command"):
+	if not unit.target:
 		offset = WorldState.get_state("map").half_tile_size
 	return unit.point_collision(unit.current_destiny, offset)
 
