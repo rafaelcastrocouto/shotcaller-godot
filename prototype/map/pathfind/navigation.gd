@@ -71,8 +71,8 @@ func draw(unit):
 			pool.append(unit.final_destiny)
 		Navigation.path_line.points = pool
 		if unit.team == "blue":
-			Navigation.path_line.default_color = Color(0.4, 0.6, 1, 0.1)
+			Navigation.path_line.default_color = Color(0.4, 0.6, 1, 0.5)
 		else:
-			Navigation.path_line.default_color = Color(1, 0.3, 0.3, 0.1)
+			Navigation.path_line.default_color = Color(1, 0.3, 0.3, 0.5)
 	else:
 		Navigation.path_line.hide()

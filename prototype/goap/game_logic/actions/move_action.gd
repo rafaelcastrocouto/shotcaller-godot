@@ -130,9 +130,10 @@ func end(unit):
 
 func stop(unit):
 	unit.current_step = Vector2.ZERO
-	unit.final_destiny = Vector2.ZERO
-	unit.agent.set_state("player_order_complete", true)
 	unit.current_destiny = Vector2.ZERO
+	unit.final_destiny = Vector2.ZERO
+	unit.agent.set_state("arrived_at_destination", true)
+	unit.agent.set_state("player_order_complete", true)
 	unit.set_state("idle")
 	var animations: AnimationPlayer = unit.animations
 	if animations:
@@ -140,8 +141,6 @@ func stop(unit):
 
 
 func smart(unit, target_point):
-	if not unit or not unit.agent:
-		return
 	if not unit.agent.get_state("stunned"):
 		if target_point != Vector2.ZERO and unit.current_destiny != Vector2.ZERO:
 			unit.final_destiny = target_point

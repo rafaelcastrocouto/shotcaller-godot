@@ -95,7 +95,6 @@ func setup_unit_path(unit, path):
 	unit.current_path = path
 
 
-
 func find(from: Vector2, to: Vector2) -> Array:
 	return find_custom_path(from, to)
 
@@ -176,7 +175,6 @@ func next(unit):
 		start(unit, unit.current_path)
 	else:
 		Goap.get_action("Move").stop(unit)
-
 
 
 

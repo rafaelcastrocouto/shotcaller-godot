@@ -23,16 +23,18 @@ func perform(agent, _delta) -> bool:
 
 func enter(agent):
 	var unit = agent.get_unit()
-	unit.agent.set_state("is_retreating", true)
-	# clear previous path and targets
-	unit.current_path = []
-	agent.set_state("target", null)
+	agent.set_state("is_retreating", true)
 	var lane = agent.get_state("lane")
 	var path = WorldState.get_state("lanes")[lane].duplicate()
 	if unit.team == "red":
 		path.reverse()
-	Goap.get_action("Navigate").navigate_to(unit, path[0])
-
+	var recover_point = path[0]
+	var half = WorldState.get_state("map").half_tile_size
+	recover_point.x += (randf() * 2 * half) - half
+	recover_point.y += (randf() * 2 * half) - half
+	Goap.get_action("Navigate").navigate_to(unit, recover_point)
+	
 
 func on_arrive(agent):
-	agent.set_state("arrived_at_retreat", true)
+	if (!agent.get_unit().current_path):
+		agent.set_state("arrived_at_retreat", true)
