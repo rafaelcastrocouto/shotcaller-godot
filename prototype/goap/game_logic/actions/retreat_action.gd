@@ -9,12 +9,8 @@ func is_valid(agent) -> bool:
 	return agent.get_unit().moves
 
 
-func get_cost(_agent) -> int:
-	return 1
-
-
 func get_effects() -> Dictionary:
-	return {"arrived_at_retreat": true}
+	return {"ready_to_fight": true}
 
 
 func perform(agent, _delta) -> bool:
@@ -36,5 +32,7 @@ func enter(agent):
 	
 
 func on_arrive(agent):
-	if (!agent.get_unit().current_path):
+	Goap.get_goal("ArriveAtDestination").on_arrive(agent)
+	if (agent.get_state("arrived_at_destination", false)):
+		agent.set_state("is_retreating", false)
 		agent.set_state("arrived_at_retreat", true)

@@ -27,8 +27,6 @@ func get_desired_state(_agent) -> Dictionary:
 
 
 func is_at_destination(unit) -> bool:
-	if not unit or not unit.agent:
-		return false
 	var offset = 0
 	if not unit.target:
 		offset = WorldState.get_state("map").half_tile_size
@@ -44,3 +42,4 @@ func on_arrive(agent):
 		agent.set_state("has_path", false)
 		agent.set_state("arrived_at_destination", true)
 		Goap.get_action("Move").end(unit)
+	

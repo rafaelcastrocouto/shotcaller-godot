@@ -139,8 +139,8 @@ func _ready():
 	projectile = get_node_or_null("sprites/weapon/projectile")
 	animations = get_node_or_null("animations") as AnimationPlayer
 	if agent and hud:
-		agent.goal_changed.connect(hud.update_goal)
-
+		#agent.goal_changed.connect(hud.update_state)
+		agent.action_changed.connect(hud.update_state)
 
 func setup_leader_exp():
 		experience_timer.wait_time = 5
@@ -447,6 +447,16 @@ func heal(heal_hp):
 	self.current_hp = int(min(self.current_hp, Modifiers.get_value(self, "hp")))
 	self.hud.update_hpbar()
 	emit_signal("unit_healed")
+
+
+func regenerate(regen_hp = null):
+	var is_regenerating_unit = type != "building" or team == "neutral"
+	if regen > 0 and is_regenerating_unit:
+		if not dead:
+			if regen_hp:
+				heal(regen_hp)
+			else:
+				heal(Modifiers.get_value(self, "regen"))
 
 
 func channel_start(time):

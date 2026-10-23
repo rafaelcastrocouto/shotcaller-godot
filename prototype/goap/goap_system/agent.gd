@@ -42,7 +42,6 @@ func _ready():
 	_unit.unit_died.connect(Goap.get_action("RangeAttack").clear_stuck)
 	_unit.unit_animation_ended.connect(on_animation_end)
 	_unit.unit_was_attacked.connect(was_attacked)
-	_unit.unit_arrived.connect(Goap.get_action("Order").on_arrive.bind(self))
 	
 	WorldState.second_elapsed.connect(on_every_second)
 	
@@ -100,14 +99,11 @@ func clear_state():
 func reset():
 	var lane = get_state("lane")
 	var tactic = get_state("tactic", "default")
-	var target_priority = get_state("target_priority")
 	set_state("target", null)
 	clear_state()
 	if lane != null:
 		set_state("lane", lane)
 	set_state("tactic", tactic)
-	if target_priority != null:
-		set_state("target_priority", target_priority.duplicate())
 	clear_plan()
 
 
@@ -120,6 +116,10 @@ func get_current_action():
 		return _current_plan[_current_plan_step]
 	else:
 		return null
+
+
+func get_current_goal():
+	return _current_goal
 
 
 func has_action_function(func_name):
@@ -208,17 +208,13 @@ func _follow_plan(plan, delta):
 
 
 func on_every_second() :
-	var is_regenerating_unit = _unit.type != "building" or _unit.team == "neutral"
-	if _unit.regen > 0 and is_regenerating_unit:
-		if not _unit.dead:
-			_unit.heal(Modifiers.get_value(_unit, "regen"))
-		else:
-			_unit.regen = 0
+	
 	if has_action_function("on_every_second"):
 		get_current_action().on_every_second(self)
 	if has_goal_function("on_every_second"):
-		_get_best_goal().on_every_second(self)
+		get_current_goal().on_every_second(self)
 	
+	_unit.regenerate()
 	_unit.apply_damage_over_time()
 
 
@@ -230,7 +226,7 @@ func on_idle_end():
 	if has_action_function("on_idle_end"):
 		get_current_action().on_idle_end(self)
 	if has_goal_function("on_idle_end"):
-		_get_best_goal().on_idle_end(self)
+		get_current_goal().on_idle_end(self)
 
 
 func on_move_requested(delta: float) -> void:
@@ -241,7 +237,7 @@ func on_stun_end():
 	if has_action_function("resume"):
 		get_current_action().resume(_unit)
 	if has_goal_function("resume"):
-		_get_best_goal().resume(_unit)
+		get_current_goal().resume(_unit)
 
 
 func on_attack_end():
@@ -272,7 +268,7 @@ func was_attacked(attacker, damage):
 	if has_action_function("was_attacked"):
 		get_current_action().was_attacked(self, attacker, damage)
 	if has_goal_function("was_attacked"):
-		_get_best_goal().was_attacked(self, attacker, damage)
+		get_current_goal().was_attacked(self, attacker, damage)
 
 
 func on_animation_end():
@@ -284,15 +280,16 @@ func on_animation_end():
 	if has_action_function("on_animation_end"):
 		get_current_action().on_animation_end(self)
 	if has_goal_function("on_animation_end"):
-		_get_best_goal().on_animation_end(self)
+		get_current_goal().on_animation_end(self)
 
 
 func on_arrive():
 	if has_action_function("on_arrive"):
 		get_current_action().on_arrive(self)
-	Goap.get_goal("ArriveAtDestination").on_arrive(self)
-
-
+		
+	if has_goal_function("on_arrive"):
+		get_current_goal().on_arrive(self)
+	
 #func clear_orders():
 #	for s in _state:
 #		print(s)

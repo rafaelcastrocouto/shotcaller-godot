@@ -87,7 +87,6 @@ func get_order_point(unit, point):
 
 func on_arrive(agent):
 	var unit = agent.get_unit()
-	
 	match agent.get_state("after_arive"):
 		"conquer":
 			Goap.get_action("Conquer").conquer_building(unit)

@@ -100,8 +100,6 @@ func on_move_requested(agent, delta: float) -> void:
 
 
 func _resolve_blocking(unit, motion: Vector2) -> Vector2:
-	if motion == Vector2.ZERO: return motion
-	
 	var resolved_motion = motion
 	
 	var destination = unit.global_position + unit.collision_position + motion
@@ -112,7 +110,7 @@ func _resolve_blocking(unit, motion: Vector2) -> Vector2:
 		var minimum_distance = unit.collision_radius + other.collision_radius
 		if destination.distance_to(other_position) < minimum_distance:
 			var diff = destination - other_position
-			resolved_motion += diff * 0.01 # small reppelling force 
+			resolved_motion += diff * 0.02 # small reppelling force 
 
 	return resolved_motion
 

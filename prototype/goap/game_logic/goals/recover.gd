@@ -11,14 +11,15 @@ func get_desired_state(_agent) -> Dictionary:
 
 func is_valid(agent) -> bool:
 	var unit = agent.get_unit()
-	if agent.get_state("is_retreating", false):
-		return true
-	if should_retreat(unit):
-		agent.set_state("is_retreating", true)
-		agent.set_state("arrived_at_retreat", false)
-		agent.set_state("ready_to_fight", false)
-		return true
-	return false
+	var is_low_hp = should_retreat(unit)
+	if (is_low_hp): start_retreat(agent)
+	return is_low_hp
+
+
+func start_retreat(agent):
+	agent.set_state("is_retreating", true)
+	agent.set_state("arrived_at_retreat", false)
+	agent.set_state("ready_to_fight", false)
 
 
 func priority(_agent) -> int:
@@ -35,3 +36,8 @@ func should_retreat(unit) -> bool:
 		"default":
 			return unit.current_hp < hp / 3
 	return false
+
+
+func on_arrive(agent):
+	if (agent.get_state("arrived_at_destination", false)):
+		Goap.get_action("Retreat").on_arrive(agent)

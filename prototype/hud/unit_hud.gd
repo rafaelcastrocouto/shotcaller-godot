@@ -12,9 +12,12 @@ extends Node2D
 # self = unit.hud
 
 
-func update_goal(goal) -> void:
-	if state:
-		state.text = goal.get_class_name() if goal else ""
+func update_state(text) -> void:
+	if (text):
+		if state is String:
+			state.text = text
+		else:
+			state.text = text.get_class_name()
 
 
 func update_hpbar():
