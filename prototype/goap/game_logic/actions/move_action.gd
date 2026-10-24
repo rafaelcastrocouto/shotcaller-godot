@@ -37,11 +37,6 @@ func enter(agent):
 	move(unit, unit.current_destiny)
 
 
-func setup_timer(unit):
-	unit.channeling_timer = Timer.new()
-	unit.channeling_timer.one_shot = true
-	unit.add_child(unit.channeling_timer)
-
 
 func point(unit, destiny):
 	if unit.moves and not unit.agent.get_state("is_stunned") and in_bounds(destiny):
@@ -130,8 +125,6 @@ func stop(unit):
 	unit.current_step = Vector2.ZERO
 	unit.current_destiny = Vector2.ZERO
 	unit.final_destiny = Vector2.ZERO
-	unit.agent.set_state("arrived_at_destination", true)
-	unit.agent.set_state("player_order_complete", true)
 	unit.set_state("idle")
 	var animations: AnimationPlayer = unit.animations
 	if animations:

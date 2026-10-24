@@ -9,7 +9,13 @@ func get_class_name() -> String:
 
 func is_valid(agent) -> bool:
 	var unit = agent.get_unit()
-	return agent.get_state("arrived_at_retreat", false) and unit.regen > 0
+	return unit.regen > 0
+
+#if unit.type == "leader": print("arrived", agent.get_unit().display_name, agent.get_state("arrived_at_retreat", false)  )#and unit.regen > 0
+
+
+func get_preconditions() -> Dictionary:
+	return {"arrived_at_retreat": true}
 
 
 func get_effects() -> Dictionary:
@@ -18,13 +24,12 @@ func get_effects() -> Dictionary:
 
 func enter(agent):
 	Goap.get_action("Move").stop(agent.get_unit())
-	agent.set_state("is_retreating", false)
 
 
 func perform(agent, _delta) -> bool:
 	var unit = agent.get_unit()
 	var hp = Modifiers.get_value(unit, "hp")
-	return unit.current_hp > hp * 0.8
+	return unit.current_hp < hp * 0.8
 
 
 func on_every_second(agent) :

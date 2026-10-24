@@ -78,7 +78,7 @@ func move(unit, final_destiny, smart_move):
 		if smart_move:
 			navigate_to(unit, final_destiny)
 		else:
-			Goap.get_action("Move").move(unit, final_destiny)
+			Goap.get_action("Move").point(unit, final_destiny)
 	else:
 		stop(unit)
 
@@ -142,7 +142,7 @@ func navigate_to(unit, target_point: Vector2):
 		unit.current_path.clear()
 		unit.current_destiny = target_point
 		unit.final_destiny = target_point
-		Goap.get_action("Move").move(unit, target_point)
+		Goap.get_action("Move").point(unit, target_point)
 
 
 func _is_same_tile(from: Vector2, to: Vector2) -> bool:

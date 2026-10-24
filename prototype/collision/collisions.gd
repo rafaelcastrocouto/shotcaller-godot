@@ -92,14 +92,10 @@ func physics_process(delta):
 						# move projectile
 						if not projectile.stuck: Goap.get_action("RangeAttack").projectile_step(delta, projectile)
 		
-		unit1.next_event  = "" # default no event
+
 		if not unit1.dead:
 			if unit1.moves and unit1.state == "move":
 				if Goap.get_goal("ArriveAtDestination").is_at_destination(unit1):
-					unit1.next_event = "arrive"
+					unit1.on_arrive()
 				else:
-					unit1.next_event = "move"
-
-		match unit1.next_event:
-			"move": unit1.on_move(delta)
-			"arrive": unit1.on_arrive()
+					unit1.on_move(delta)

@@ -31,8 +31,7 @@ func enter(agent):
 	Goap.get_action("Navigate").navigate_to(unit, recover_point)
 	
 
-func on_arrive(agent):
-	Goap.get_goal("ArriveAtDestination").on_arrive(agent)
+func exit(agent):
 	if (agent.get_state("arrived_at_destination", false)):
 		agent.set_state("is_retreating", false)
 		agent.set_state("arrived_at_retreat", true)

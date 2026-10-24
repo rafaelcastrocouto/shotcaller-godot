@@ -34,6 +34,7 @@ var current_hp:int = 100
 @export var display_name:String
 @export var title:String
 @export var team:String = "blue"
+@export var gold = 0
 @export var respawn:float = 1
 var dead:bool = false
 @export var immune:bool = false
@@ -86,11 +87,9 @@ var projectiles:Array = []
 var attack_hit_position:Vector2 = Vector2.ONE
 var attack_hit_radius = 24
 
-# BEHAVIOR
-var next_event:String = "" # "move" or "arrive"
+# ANIMATION_STATE
 var state:String = "idle" # "move", "attack", "death"
 var wait_time:int = 0
-var gold = 0
 
 # ORDERS
 var control_delay = 3
@@ -459,6 +458,13 @@ func regenerate(regen_hp = null):
 				heal(Modifiers.get_value(self, "regen"))
 
 
+
+func setup_channeling_timer():
+	channeling_timer = Timer.new()
+	channeling_timer.one_shot = true
+	add_child(channeling_timer)
+
+
 func channel_start(time):
 	self.agent.set_state("is_channeling" , true)
 	if self.channeling_timer.time_left > 0:
@@ -466,7 +472,7 @@ func channel_start(time):
 	self.channeling_timer.wait_time = time
 	self.channeling_timer.start()
 	emit_signal("unit_started_channeling")
-
+	
 
 func stun_start():
 	self.wait_time = 2

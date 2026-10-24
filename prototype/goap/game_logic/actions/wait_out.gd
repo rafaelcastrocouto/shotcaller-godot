@@ -33,4 +33,4 @@ func perform(agent, _delta) -> bool:
 
 func exit(agent):
 	var unit = agent.get_unit()
-	Goap.get_action("Navigate").resume_lane(agent.get_unit())
+	Goap.get_action("Navigate").resume_lane(unit)

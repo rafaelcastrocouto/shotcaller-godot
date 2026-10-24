@@ -128,8 +128,7 @@ func has_action_function(func_name):
 
 
 func has_goal_function(func_name):
-	var goal = _get_best_goal()
-	return goal != null and goal.has_method(func_name)
+	return _current_goal != null and _current_goal.has_method(func_name)
 
 
 func clear_plan():

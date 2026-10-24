@@ -45,7 +45,7 @@ func create(template, lane, team, mode, point):
 	WorldState.get_state("all_units").append(unit)
 	game.selection.setup_selection(unit)
 	Collisions.setup(unit)
-	Goap.get_action("Move").setup_timer(unit) # channeling timer
+	unit.setup_channeling_timer()
 	game.ui.minimap.setup_symbol(unit)
 	if unit.type == "leader":
 		WorldState.get_state("all_leaders").append(unit)
@@ -54,6 +54,7 @@ func create(template, lane, team, mode, point):
 		else:
 			WorldState.get_state("enemy_leaders").append(unit)
 	return unit
+
 
 
 func leader_scene(leader_name):
