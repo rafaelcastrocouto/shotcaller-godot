@@ -10,7 +10,7 @@ func is_valid(agent) -> bool:
 
 
 func get_effects() -> Dictionary:
-	return {"ready_to_fight": true}
+	return {"arrived_at_retreat": true}
 
 
 func perform(agent, _delta) -> bool:
@@ -28,10 +28,13 @@ func enter(agent):
 	var half = WorldState.get_state("map").half_tile_size
 	recover_point.x += (randf() * 2 * half) - half
 	recover_point.y += (randf() * 2 * half) - half
-	Goap.get_action("Navigate").navigate_to(unit, recover_point)
+	unit.final_destiny = recover_point
+	Goap.get_action("Navigate").start(unit, path)
 	
 
+func on_arrive(agent):
+	agent.set_state("arrived_at_retreat", true)
+	
+	
 func exit(agent):
-	if (agent.get_state("arrived_at_destination", false)):
-		agent.set_state("is_retreating", false)
-		agent.set_state("arrived_at_retreat", true)
+	agent.set_state("is_retreating", false)

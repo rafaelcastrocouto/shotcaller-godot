@@ -1,6 +1,6 @@
 extends "res://goap/goap_system/action_contract.gd"
 
-const _wait_regen_bonus = 10
+const _wait_regen_bonus = 20
 
 
 func get_class_name() -> String:
@@ -9,9 +9,10 @@ func get_class_name() -> String:
 
 func is_valid(agent) -> bool:
 	var unit = agent.get_unit()
+	#if unit.type == "leader": 
+	#	print("arrived", agent.get_unit().display_name, agent.get_state("arrived_at_retreat", false)  )#and unit.regen > 0
 	return unit.regen > 0
 
-#if unit.type == "leader": print("arrived", agent.get_unit().display_name, agent.get_state("arrived_at_retreat", false)  )#and unit.regen > 0
 
 
 func get_preconditions() -> Dictionary:
@@ -28,11 +29,11 @@ func enter(agent):
 
 func perform(agent, _delta) -> bool:
 	var unit = agent.get_unit()
-	var hp = Modifiers.get_value(unit, "hp")
-	return unit.current_hp < hp * 0.8
+	var hp = Modifiers.get_value(unit, "hp") * 0.9
+	return unit.current_hp > hp
 
 
-func on_every_second(agent) :
+func on_every_second(agent):
 	var unit = agent.get_unit()
 	unit.regenerate(_wait_regen_bonus)
 

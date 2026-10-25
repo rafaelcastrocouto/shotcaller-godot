@@ -5,7 +5,10 @@ func get_class_name(): return "PursueEnemy"
 
 
 func is_valid(agent) -> bool:
-	return agent.get_unit().moves and is_instance_valid(agent.get_unit().target)
+	var unit = agent.get_unit()
+	if !unit.moves or unit.agent.get_state("stunned", false):
+		return false
+	return is_instance_valid(unit.target)
 
 
 func get_cost(_agent) -> int:
@@ -13,7 +16,10 @@ func get_cost(_agent) -> int:
 
 
 func get_preconditions() -> Dictionary:
-	return {"has_attack_target": true}
+	return {
+		"ready_to_fight": true, 
+		"has_attack_target": true
+	}
 
 
 func get_effects() -> Dictionary:

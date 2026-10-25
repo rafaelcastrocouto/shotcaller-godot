@@ -150,6 +150,7 @@ func send_pawn(template_name, lane, team):
 		pawn = game.spawn.create(pawn_scene(template_name), lane, team, "point_random", path_start)
 	Goap.get_action("Navigate").setup_unit_path(pawn, path)
 
+
 func leaders_cycle() -> void:
 	for leader in WorldState.get_state("player_leaders") + WorldState.get_state("enemy_leaders"):
 		var extra_unit = WorldState.get_state("player_extra_unit")
@@ -165,7 +166,7 @@ func leaders_cycle() -> void:
 
 
 func spawn_unit(unit, lane, team, mode, point):
-	unit.agent._add_goal("WalkLane")
+	unit.agent.add_goal("WalkLane")
 	unit.agent.set_state("lane", lane)
 	if unit.type != "leader":
 		unit.agent.set_state("tactic", _lane_tactic(lane, team))
@@ -177,7 +178,6 @@ func spawn_unit(unit, lane, team, mode, point):
 	if mode == "random_map":
 		point = Utils.random_point()
 	unit.global_position = point
-	unit.set_state("idle")
 	return unit
 
 

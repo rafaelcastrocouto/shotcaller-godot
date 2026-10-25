@@ -41,10 +41,10 @@ func enter(_agent):
 # "agent" is the controller of the NPC
 # "delta" is the time in seconds since last loop.
 #
-# Returns true when the task is complete.
+# Returns true when the task is complete. 
 # Example: return agent.get_state("has_wood")
 func perform(_agent, _delta) -> bool:
-	return false
+	return false # is_step_complete
 
 
 # Runs once when the action ends

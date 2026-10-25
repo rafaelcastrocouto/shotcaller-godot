@@ -8,14 +8,17 @@ func get_class_name() -> String:
 func is_valid(agent) -> bool:
 	var unit = agent.get_unit()
 	var has_path = not unit.current_path.is_empty()
-	agent.set_state("has_path", has_path)
 	var is_moving_to_destination = (
-		unit.moves and unit.state == "move" and unit.current_destiny != Vector2.ZERO
+		unit.moves and unit.current_destiny != Vector2.ZERO
 	)
-	if has_path or is_moving_to_destination:
-		agent.set_state("arrived_at_destination", false)
-		return true
-	return false
+	return has_path or is_moving_to_destination
+
+
+func enter(agent):
+	var unit = agent.get_unit()
+	var has_path = not unit.current_path.is_empty()
+	agent.set_state("has_path", has_path)
+	agent.set_state("arrived_at_destination", false)
 
 
 func priority(_agent) -> int:
@@ -41,5 +44,5 @@ func on_arrive(agent):
 		unit.current_path.clear()
 		agent.set_state("has_path", false)
 		agent.set_state("arrived_at_destination", true)
-		Goap.get_action("Move").end(unit)
+		Goap.get_action("Move").stop(unit)
 	

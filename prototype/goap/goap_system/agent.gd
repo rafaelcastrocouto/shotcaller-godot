@@ -45,14 +45,13 @@ func _ready():
 	
 	WorldState.second_elapsed.connect(on_every_second)
 	
-	set_state("tactic", "default")
+	reset()
 
-
-func _add_goal(goal_name: String) -> void:
+func add_goal(goal_name: String) -> void:
 	var goal = Goap.get_goal(goal_name)
 	if goal and not _goals.has(goal):
 		_goals.append(goal)
-
+		goals_list.append(goal_name)
 
 func get_unit():
 	return _unit
@@ -99,11 +98,13 @@ func clear_state():
 func reset():
 	var lane = get_state("lane")
 	var tactic = get_state("tactic", "default")
-	set_state("target", null)
+	var unit = get_unit()
 	clear_state()
+	set_state("target", null)
 	if lane != null:
 		set_state("lane", lane)
 	set_state("tactic", tactic)
+	if (unit.attacks): set_state("ready_to_fight", true)
 	clear_plan()
 
 

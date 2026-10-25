@@ -11,12 +11,7 @@ func get_class_name() -> String:
 
 func is_valid(agent) -> bool:
 	var unit = agent.get_unit()
-	return (
-		unit.moves
-		and unit.state == "move"
-		and unit.current_destiny != Vector2.ZERO
-		and agent.get_state("has_path")
-	)
+	return unit.moves
 
 
 func get_preconditions() -> Dictionary:
@@ -113,12 +108,6 @@ func _resolve_blocking(unit, motion: Vector2) -> Vector2:
 func resume(unit):
 	if not unit.agent.get_state("is_stunned"):
 		move(unit, unit.current_destiny)
-
-
-func end(unit):
-	if unit.agent.get_state("is_retreating"):
-		unit.agent.set_state("is_retreating", false)
-	stop(unit)
 
 
 func stop(unit):

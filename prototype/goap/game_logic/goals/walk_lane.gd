@@ -28,6 +28,12 @@ func is_valid(agent) -> bool:
 	if unit.target:
 		return false
 
+	return not unit.current_path.is_empty() or unit.current_destiny != Vector2.ZERO
+
+
+func enter(agent):
+	var unit = agent.get_unit()
+	var lane = agent.get_state("lane", "")
 	if unit.current_path.is_empty() and unit.current_destiny == Vector2.ZERO:
 		var path = Navigation.new_lane_path(lane, unit.team)
 		if path.is_empty():
@@ -35,7 +41,6 @@ func is_valid(agent) -> bool:
 		Goap.get_action("Navigate").setup_unit_path(unit, path)
 
 	agent.set_state("has_path", not unit.current_path.is_empty())
-	return not unit.current_path.is_empty() or unit.current_destiny != Vector2.ZERO
 
 
 func priority(_agent) -> int:

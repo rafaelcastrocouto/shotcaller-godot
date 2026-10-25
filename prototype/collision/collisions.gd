@@ -72,27 +72,8 @@ func physics_process(delta):
 	
 	for unit1 in all_units:
 		if unit1.projectiles.size():
-			for projectile in unit1.projectiles:
-				if is_instance_valid(projectile.node) and projectile.speed and projectile.stuck == false:
-					var projectile_position = projectile.node.global_position + (projectile.speed * delta)
-					# projectile out of range
-					if projectile_position.distance_to(unit1.global_position + unit1.collision_position) > projectile.radius:
-						Goap.get_action("RangeAttack").projectile_stuck(unit1, null, projectile)
-					else:
-						if projectile.target:
-							if projectile.target.point_collision(projectile_position):
-								unit1.take_hit(projectile.target, projectile);
-						else: # pierces
-							var targets = get_units_in_radius(projectile_position, 1) 
-							for target in targets:
-								if (Goap.get_action("ChooseTarget").can_hit(unit1, target) and
-										projectile.targets.find(target) < 0 and
-										target.point_collision(projectile_position) ):
-									unit1.take_hit(target, projectile)
-						# move projectile
-						if not projectile.stuck: Goap.get_action("RangeAttack").projectile_step(delta, projectile)
+			Goap.get_action("RangeAttack").projectile_loop(unit1, delta)
 		
-
 		if not unit1.dead:
 			if unit1.moves and unit1.state == "move":
 				if Goap.get_goal("ArriveAtDestination").is_at_destination(unit1):

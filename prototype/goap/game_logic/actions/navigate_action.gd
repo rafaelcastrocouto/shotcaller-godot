@@ -6,7 +6,7 @@ func get_class_name() -> String:
 
 
 func is_valid(agent) -> bool:
-	return agent.get_unit().moves and agent.get_state("has_path", false)
+	return agent.get_unit().moves
 
 
 func get_cost(_agent) -> int:
@@ -23,12 +23,15 @@ func perform(agent, _delta) -> bool:
 
 func enter(agent):
 	var unit = agent.get_unit()
-	var new_path = unit.cut_path(unit.current_path)
+	#var new_path = unit.cut_path(unit.current_path)
 	agent.set_state("arrived_at_destination", false)
-	if not new_path.is_empty():
-		start(unit, new_path)
-	else:
-		agent.set_state("arrived_at_destination", true)
+	#if not new_path.is_empty():
+	start(unit, unit.current_path)
+
+
+func exit(agent):
+	pass
+	#agent.set_state("arrived_at_destination", true)
 
 
 func smart(unit, final_destiny):
