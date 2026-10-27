@@ -40,7 +40,6 @@ var dead:bool = false
 @export var immune:bool = false
 var mirror:bool = false
 var texture:Dictionary
-var units_in_radius := []
 var symbol:bool = false
 var current_modifiers = Modifiers.new_modifiers()
 
@@ -498,14 +497,10 @@ func on_stun_end():
 func die():  # hp <= 0
 	self.set_state("death")
 	self.dead = true
-	self.agent.set_state("target", null)
-	
-	self.agent.set_state("is_channeling", false)
 
-	var neighbors = self.units_in_radius
+	var neighbors = get_units_in_sight({"team": opponent_team(), "type": "leader"})
 	for neighbor in neighbors:
-		if neighbor.type == "leader" and neighbor.team != team:
-			neighbor.gain_experience(EXP_PER_KILL)
+		neighbor.gain_experience(EXP_PER_KILL)
 
 	if type == "leader":
 		if last_attacker:

@@ -9,27 +9,32 @@ func get_class_name() -> String:
 	return "Move"
 
 
-func is_valid(agent) -> bool:
-	var unit = agent.get_unit()
-	return unit.moves
+func is_valid(_agent) -> bool:
+	#var unit = _agent.get_unit()
+	return false #unit.moves
 
 
-func get_preconditions() -> Dictionary:
-	return {"has_path": false}
+#func get_cost(_agent) -> int:
+#	return 1
 
 
-func get_effects() -> Dictionary:
-	return {"arrived_at_destination": true}
+#func get_preconditions() -> Dictionary:
+#	return {"is_stunned": false}
 
 
-func perform(agent, _delta) -> bool:
-	return agent.get_state("arrived_at_destination", false)
+#func get_effects() -> Dictionary:
+#	return {"arrived_at_destination": true}
 
 
-func enter(agent):
-	var unit = agent.get_unit()
-	agent.set_state("arrived_at_destination", false)
-	move(unit, unit.current_destiny)
+#func perform(agent, _delta) -> bool:
+	#var unit = agent.get_unit() 
+	#step(unit, _delta)
+	#return true
+
+
+#func enter(agent):
+#	var unit = agent.get_unit()
+#	move(unit, unit.current_destiny)
 
 
 
@@ -70,37 +75,37 @@ func calc_step(unit, speed):
 		animations.speed_scale = speed / max(unit.speed, 0.0001)
 
 
-func step(unit, delta):
-	if delta <= 0: return
-	calc_step(unit, max(Modifiers.get_value(unit, "speed"), 0.0))
-	var motion = unit.current_step * delta
-	var speed2 = motion.length_squared()
-	# if too fast check if won't move after destiny
-	if speed2 > 1:
-		var distance_to_destination = unit.current_destiny - unit.global_position
-		if speed2 > distance_to_destination.length_squared():
-			motion = distance_to_destination
-	motion = _resolve_blocking(unit, motion)
-	unit.global_position += motion
-
-
 func on_move_requested(agent, delta: float) -> void:
 	if not agent.get_state("is_stunned"):
 		step(agent.get_unit(), delta)
 
 
+func step(unit, delta): 
+	if delta <= 0: return
+	calc_step(unit, max(Modifiers.get_value(unit, "speed"), 0.0))
+	var motion = unit.current_step * delta
+	var speed2 = motion.length_squared()
+	var distance_to_destination = unit.current_destiny - unit.global_position
+	# if too fast check if won't move after destiny
+	if speed2 > distance_to_destination.length_squared():
+		motion = distance_to_destination
+	motion = _resolve_blocking(unit, motion)
+	unit.global_position += motion
+
+
 func _resolve_blocking(unit, motion: Vector2) -> Vector2:
 	var resolved_motion = motion
-	
 	var destination = unit.global_position + unit.collision_position + motion
-	for other in Collisions.get_units_in_radius(destination, 1):
-		if other == unit or other.dead or not other.collide:
-			continue
-		var other_position = other.global_position + other.collision_position
-		var minimum_distance = unit.collision_radius + other.collision_radius
-		if destination.distance_to(other_position) < minimum_distance:
-			var diff = destination - other_position
-			resolved_motion += diff * 0.02 # small reppelling force 
+	var units_at_destination = Collisions.get_units_in_radius(destination, unit.collision_radius)
+	
+	for other in units_at_destination:
+		var other_unit_collides = (other != unit) and other.collide and !other.dead
+		if other_unit_collides:
+			var other_position = other.global_position + other.collision_position
+			var minimum_distance = unit.collision_radius + other.collision_radius
+			if destination.distance_to(other_position) < minimum_distance:
+				var diff = destination - other_position
+				resolved_motion += diff * 0.05 # small reppelling force 
 
 	return resolved_motion
 
@@ -118,13 +123,6 @@ func stop(unit):
 	var animations: AnimationPlayer = unit.animations
 	if animations:
 		animations.speed_scale = 1.0
-
-
-func smart(unit, target_point):
-	if not unit.agent.get_state("stunned"):
-		if target_point != Vector2.ZERO and unit.current_destiny != Vector2.ZERO:
-			unit.final_destiny = target_point
-		Goap.get_action("Navigate").navigate_to(unit, target_point)
 
 
 func teleport(unit, target_point):

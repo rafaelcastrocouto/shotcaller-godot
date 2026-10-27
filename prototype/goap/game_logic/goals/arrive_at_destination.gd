@@ -22,7 +22,7 @@ func enter(agent):
 
 
 func priority(_agent) -> int:
-	return 1
+	return 3
 
 
 func get_desired_state(_agent) -> Dictionary:

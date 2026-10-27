@@ -29,7 +29,7 @@ func enter(agent):
 	recover_point.x += (randf() * 2 * half) - half
 	recover_point.y += (randf() * 2 * half) - half
 	unit.final_destiny = recover_point
-	Goap.get_action("Navigate").start(unit, path)
+	Goap.get_action("Navigate").follow_path(unit, path)
 	
 
 func on_arrive(agent):

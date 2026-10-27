@@ -10,18 +10,37 @@ func get_class_name() -> String:
 	return "ChooseTarget"
 
 
-func is_valid(_agent) -> bool:
-	return false
+func is_valid(agent) -> bool:
+	var unit = agent.get_unit()
+	return unit.attacks
 
 
-func closest_enemy_unit(unit, enemies):
-	var filtered = []
-	for enemy in enemies:
-		if can_hit(unit, enemy):
-			filtered.append(enemy)
-	var sorted = unit.sort_by_distance(filtered)
-	if sorted:
-		return sorted[0].unit
+#func get_cost(_agent) -> int:
+#	return 1
+
+
+func get_preconditions() -> Dictionary:
+	return {"is_stunned": false}
+
+
+func get_effects() -> Dictionary:
+	return {"has_attack_target": true}
+
+
+
+func enter(agent):
+	var unit = agent.get_unit()
+	var enemies = unit.get_units_in_sight({ "team": unit.opponent_team() })
+	var target = select_target(unit, enemies)
+	set_target(agent, target)
+
+
+func perform(_agent, _delta) -> bool:
+	return true # is_step_complete
+
+
+#func exit(_agent) :
+#	pass
 
 
 func select_target(unit, enemies):
@@ -63,3 +82,19 @@ func in_range(attacker, target) -> bool:
 
 func is_valid_target(attacker, target) -> bool:
 	return can_hit(attacker, target) and in_range(attacker, target)
+
+
+
+func set_target(agent, value) -> void:
+	var unit = agent.get_unit()
+	var target = value if is_instance_valid(value) else null
+	var previous_target = unit.target
+	if previous_target != target:
+		unit.last_target = previous_target
+	if previous_target != target or target == null:
+		unit.attack_count = 0
+		Modifiers.remove(unit, "attack_speed", "agile")
+		unit.target = target
+		
+	agent.set_state("has_attack_target", target != null)
+	agent.set_state("hunting", target != null)

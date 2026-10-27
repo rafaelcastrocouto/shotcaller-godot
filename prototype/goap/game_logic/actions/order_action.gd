@@ -109,11 +109,11 @@ func _execute_player_order(unit, order_type: String, target: Vector2, agent = nu
 	match order_type:
 		"move":
 			if Goap.get_action("Move").in_bounds(target):
-				Goap.get_action("Navigate").navigate_to(unit, target)
+				Goap.get_action("Navigate").move(unit, target)
 			elif agent:
 				complete_player_order(agent)
 		"advance":
-			Goap.get_action("Navigate").smart(unit, target)
+			Goap.get_action("Navigate").point(unit, target)
 		"attack":
 			Goap.get_action("AttackEnemy").point(unit, target)
 		"lane":

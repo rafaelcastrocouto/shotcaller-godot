@@ -113,25 +113,25 @@ func no_delay(unit):
 
 func control_state_order(point):
 	var selected_unit = WorldState.get_state("selected_unit")
-	
-	if selected_unit.is_controllable():
-		if selected_unit.moves: 
-			game.control_state = "move"
-		elif selected_unit.attacks: # controllable towers and buildings
-			game.control_state = "attack"
-	
-	if selected_unit.attacks:
-		var target_unit = get_sel_unit_at_point(Vector2(point))
-		if (target_unit and target_unit.team != selected_unit.team): 
-			game.control_state = "attack"
-	
-	match game.control_state:
-		"selection": deselect()
-		"teleport": teleport(selected_unit, point)
-		"advance": advance(selected_unit, point)
-		"move": move(selected_unit, point)
-		"lane": change_lane(selected_unit, point)
-		"attack": attack(selected_unit, point)
+	if selected_unit:
+		if selected_unit.is_controllable():
+			if selected_unit.moves: 
+				game.control_state = "move"
+			elif selected_unit.attacks: # controllable towers and buildings
+				game.control_state = "attack"
+		
+		if selected_unit.attacks:
+			var target_unit = get_sel_unit_at_point(Vector2(point))
+			if (target_unit and target_unit.team != selected_unit.team): 
+				game.control_state = "attack"
+		
+		match game.control_state:
+			"selection": deselect()
+			"teleport": teleport(selected_unit, point)
+			"advance": advance(selected_unit, point)
+			"move": move(selected_unit, point)
+			"lane": change_lane(selected_unit, point)
+			"attack": attack(selected_unit, point)
 
 
 func advance(unit, point):

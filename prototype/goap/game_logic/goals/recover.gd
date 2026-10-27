@@ -23,7 +23,7 @@ func enter(agent):
 
 
 func priority(_agent) -> int:
-	return 5
+	return 10
 
 
 func should_retreat(unit) -> bool:

@@ -83,14 +83,14 @@ func leaders():
 			var lane = "mid"
 			var map = WorldState.get_state("map")
 			var lanes_node = map.get_node_or_null("lanes")
+			# 3 lane map spawn points
+			# todo create spawn areas for barracks
 			if lanes_node and lanes_node.get_children().size() == 3:
 				if counter < 2: lane = "top"
 				if counter == 2: lane = "mid"
 				if counter > 2: lane = "bot"
-			var path = Navigation.new_lane_path(lane, team)
-			var path_start = path.pop_front()
+			var path_start = Navigation.new_lane_path(lane, team).pop_front()
 			var leader_node = game.spawn.create(leader_scene(leader_name), lane, team, "point_random", path_start)
-			Goap.get_action("Navigate").setup_unit_path(leader_node, path)
 			leader_node.setup_leader_exp()
 			if team == "red":
 				red_leaders.append(leader_node)
@@ -112,10 +112,10 @@ func spawn_group_cycle():
 		var lanes_node = map.get_node_or_null("lanes")
 		if lanes_node:
 			for lane in lanes_node.get_children():
-				send_pawn("archer", lane.name, team)
+				create_pawn("archer", lane.name, team)
 				for n in 2:
-					send_pawn("infantry", lane.name, team)
-				send_pawn(extra_unit, lane.name, team)
+					create_pawn("infantry", lane.name, team)
+				create_pawn(extra_unit, lane.name, team)
 	
 	WorldState.spawn_timer.start()
 	await WorldState.spawn_timer.timeout
@@ -137,18 +137,15 @@ func recycle(template, lane, team, point):
 		return unit
 
 
-
 func pawn_scene(pawn_name):
 	return load("res://unit/pawns/"+pawn_name+".tscn")
 
 
-func send_pawn(template_name, lane, team):
-	var path = Navigation.new_lane_path(lane, team)
-	var path_start = path.pop_front()
+func create_pawn(template_name, lane, team):
+	var path_start = Navigation.new_lane_path(lane, team).pop_front()
 	var pawn = recycle(template_name, lane, team, path_start)
 	if not pawn:
 		pawn = game.spawn.create(pawn_scene(template_name), lane, team, "point_random", path_start)
-	Goap.get_action("Navigate").setup_unit_path(pawn, path)
 
 
 func leaders_cycle() -> void:
@@ -227,13 +224,11 @@ func cemitery_add_leader(leader):
 	await get_tree().create_timer(respawn_time).timeout
 	
 	# respawn leader
+	leader.reset_unit()
 	var team = leader.team
 	var lane = leader.agent.get_state("lane")
-	var path = WorldState.get_state("lanes")[lane].duplicate()
-	if leader.team == "red": path.reverse()
-	var path_start = path.pop_front()
+	var path_start = Navigation.new_lane_path(lane, team).pop_front()
 	leader = spawn_unit(leader, lane, team, "point_random", path_start)
-	leader.reset_unit()
 
 
 

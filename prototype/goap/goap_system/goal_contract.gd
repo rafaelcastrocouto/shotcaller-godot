@@ -12,8 +12,7 @@ func is_valid(_agent) -> bool:
 	return true
 
 
-# Returns goals priority. This priority can be dynamic. Check
-# `./goals/keep_fed.gd` for an example of dynamic priority.
+# Returns goals priority. This priority can be dynamic.
 func priority(_agent) -> int:
 	return 1
 

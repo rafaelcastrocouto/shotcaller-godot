@@ -10,11 +10,15 @@ func is_valid(agent) -> bool:
 
 
 func get_cost(_agent) -> int:
-	return 1
+	return 2
 
 
 func get_effects() -> Dictionary:
-	return {"arrived_at_destination": true}
+	return {
+		"arrived_at_destination": true, 
+		"lane_route_finished": true,
+		"enemy_in_attack_range": true
+	}
 
 
 func perform(agent, _delta) -> bool:
@@ -23,28 +27,35 @@ func perform(agent, _delta) -> bool:
 
 func enter(agent):
 	var unit = agent.get_unit()
-	#var new_path = unit.cut_path(unit.current_path)
-	agent.set_state("arrived_at_destination", false)
-	#if not new_path.is_empty():
-	start(unit, unit.current_path)
+	var lane = agent.get_state("lane", "")
+	
+	if !unit.current_path:
+		var path = Navigation.new_lane_path(lane, unit.team)
+		if !path.is_empty():
+			unit.current_path = path
+	
+	agent.set_state("has_path", not unit.current_path.is_empty())
+	agent.set_state("lane_route", lane)
+
+	if (agent.get_state("resume_path", false)):
+		agent.erase_state("resume_path")
+		cut_path(unit, unit.current_path)
+	else:
+		follow_path(unit, unit.current_path)
 
 
 func exit(agent):
-	pass
-	#agent.set_state("arrived_at_destination", true)
+	if (agent.get_state("has_path", false)):
+		agent.set_state("resume_path", true)
 
 
-func smart(unit, final_destiny):
-	point(unit, final_destiny, true)
-
-
-func point(unit, final_destiny, smart_move = false):
+func point(unit, final_destiny):
 	unit.agent.set_state("target", null)
 	if final_destiny and Goap.get_action("Move").in_bounds(final_destiny):
 		unit.final_destiny = final_destiny
 		if unit.attacks and not unit.agent.get_state("is_stunned"):
 			var path = unit.current_path
-			if smart_move:
+			if !path or path.is_empty():
 				path = find(unit.global_position, unit.final_destiny)
 				if path:
 					unit.current_path = path
@@ -56,46 +67,32 @@ func point(unit, final_destiny, smart_move = false):
 			var has_path = path and not path.is_empty()
 			if enemies.is_empty():
 				if not at_final_destination:
-					move(unit, unit.final_destiny, smart_move)
+					move(unit, unit.final_destiny)
 				elif has_path:
-					start(unit, path)
+					follow_path(unit, path)
 			else:
 				var choose_target = Goap.get_action("ChooseTarget")
 				var target = choose_target.select_target(unit, enemies)
 				if not target:
 					if not at_final_destination:
-						move(unit, unit.final_destiny, smart_move)
+						move(unit, unit.final_destiny)
 					elif has_path:
-						start(unit, path)
+						follow_path(unit, path)
 				else:
 					unit.agent.set_state("target", target)
 					var target_position = target.global_position + target.collision_position
 					if choose_target.in_range(unit, target):
 						Goap.get_action("AttackEnemy").point(unit, target_position)
 					else:
-						move(unit, target_position, smart_move)
-
-
-func move(unit, final_destiny, smart_move):
-	if unit.moves and final_destiny:
-		if smart_move:
-			navigate_to(unit, final_destiny)
-		else:
-			Goap.get_action("Move").point(unit, final_destiny)
-	else:
-		stop(unit)
-
-
-func resume(unit):
-	point(unit, null)
+						move(unit, target_position)
 
 
 func stop(unit):
 	Goap.get_action("Move").stop(unit)
 
 
-func setup_unit_path(unit, path):
-	unit.current_path = path
+#func setup_unit_path(unit, path):
+#	unit.current_path = path
 
 
 func find(from: Vector2, to: Vector2) -> Array:
@@ -133,13 +130,13 @@ func in_limits(target_point):
 	)
 
 
-func navigate_to(unit, target_point: Vector2):
+func move(unit, target_point: Vector2):
 	if not unit or target_point == Vector2.ZERO:
 		return
 	var path = find(unit.global_position, target_point)
 	if not path.is_empty():
 		unit.final_destiny = target_point
-		start(unit, path)
+		follow_path(unit, path)
 		return
 	if _is_same_tile(unit.global_position, target_point):
 		unit.current_path.clear()
@@ -153,7 +150,7 @@ func _is_same_tile(from: Vector2, to: Vector2) -> bool:
 	return (from / tile_size).floor() == (to / tile_size).floor()
 
 
-func start(unit, new_path):
+func follow_path(unit, new_path):
 	if new_path and not new_path.is_empty():
 		var path = new_path.duplicate()
 		var next_point = path.pop_front()
@@ -162,30 +159,34 @@ func start(unit, new_path):
 		Goap.get_action("Move").point(unit, next_point)
 
 
-func follow_path(unit, path):
+func cut_path(unit, path):
 	if path and path.size():
 		var new_path = unit.cut_path(path)
-		start(unit, new_path)
+		follow_path(unit, new_path)
+
+
+func resume_path(unit):
+	cut_path(unit, unit.current_path)
 
 
 func resume_lane(unit):
 	var lane = unit.agent.get_state("lane")
-	start(unit, Collisions.new_lane_path(lane, unit.team))
+	cut_path(unit, Collisions.new_lane_path(lane, unit.team))
 
 
 func next(unit):
 	if not unit.current_path.is_empty():
-		start(unit, unit.current_path)
+		follow_path(unit, unit.current_path)
 	else:
 		Goap.get_action("Move").stop(unit)
 
 
-
 func change_lane(unit, lane_point):
 	var lane = Utils.closer_lane(lane_point)
+	unit.agent.set_state("lane", lane)
 	var path = WorldState.get_state("lanes")[lane].duplicate()
 	if unit.team == "red":
 		path.reverse()
 	var lane_start = path.pop_front()
-	unit.agent.set_state("lane", lane)
-	Goap.get_action("Move").smart(unit, lane_start)
+	move(unit, lane_start)
+	unit.current_path.append(path)

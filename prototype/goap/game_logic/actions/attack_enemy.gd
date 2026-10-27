@@ -42,7 +42,7 @@ func enter(agent):
 		point(unit, target.global_position + target.collision_position)
 	else:
 		unit.final_destiny = target.global_position
-		Goap.get_action("Navigate").move(unit, target.global_position, false)
+		Goap.get_action("Navigate").move(unit, target.global_position)
 
 
 func on_animation_end(agent):
@@ -55,7 +55,7 @@ func on_animation_end(agent):
 			point(unit, target.global_position + target.collision_position)
 		else:
 			unit.final_destiny = target.global_position
-			Goap.get_action("Navigate").move(unit, target.global_position, false)
+			Goap.get_action("Navigate").move(unit, target.global_position)
 	else:
 		Goap.get_action("Move").stop(unit)
 

@@ -53,6 +53,7 @@ func add_goal(goal_name: String) -> void:
 		_goals.append(goal)
 		goals_list.append(goal_name)
 
+
 func get_unit():
 	return _unit
 
@@ -65,26 +66,11 @@ func get_state(state_name, default = null):
 
 func set_state(state_name, value):
 	if state_name == "target":
-		_set_target(value)
+		Goap.get_action("ChooseTarget").set_target(self, value)
 		return
 	_state[state_name] = value
 
 
-func _set_target(value) -> void:
-	var target = value if is_instance_valid(value) else null
-	var previous_target = _state.get("target", _unit.target if _unit else null)
-	_state["target"] = target
-	if not _unit:
-		return
-
-	_unit.target = target
-	if previous_target != target:
-		_unit.last_target = previous_target
-	if previous_target != target or target == null:
-		_unit.attack_count = 0
-		Modifiers.remove(_unit, "attack_speed", "agile")
-	_state["has_attack_target"] = target != null
-	_state["hunting"] = target != null and _unit.moves
 
 
 func erase_state(state_name):
@@ -243,12 +229,8 @@ func on_stun_end():
 func on_attack_end():
 	if has_action_function("on_attack_end"):
 		get_current_action().on_attack_end(self)
-	if not _unit.current_path.is_empty():
-		Goap.get_action("Navigate").follow_path(_unit, _unit.current_path)
-	elif _unit.current_destiny != Vector2.ZERO:
-		Goap.get_action("Move").point(_unit, _unit.current_destiny)
-	else:
-		Goap.get_action("Move").stop(_unit)
+	if has_goal_function("on_attack_end"):
+		get_current_goal().on_attack_end(self)
 
 
 func on_death_started():

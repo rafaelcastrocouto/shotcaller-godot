@@ -14,6 +14,9 @@ func is_valid(agent) -> bool:
 	return unit.regen > 0
 
 
+func get_cost(_agent) -> int:
+	return 1
+
 
 func get_preconditions() -> Dictionary:
 	return {"arrived_at_retreat": true}

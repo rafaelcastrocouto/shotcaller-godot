@@ -6,9 +6,7 @@ func get_class_name(): return "PursueEnemy"
 
 func is_valid(agent) -> bool:
 	var unit = agent.get_unit()
-	if !unit.moves or unit.agent.get_state("stunned", false):
-		return false
-	return is_instance_valid(unit.target)
+	return unit.moves and unit.target
 
 
 func get_cost(_agent) -> int:
@@ -17,6 +15,7 @@ func get_cost(_agent) -> int:
 
 func get_preconditions() -> Dictionary:
 	return {
+		"is_stunned": false,
 		"ready_to_fight": true, 
 		"has_attack_target": true
 	}
@@ -33,12 +32,13 @@ func perform(agent, _delta) -> bool:
 		return true
 	var in_range = Goap.get_action("ChooseTarget").in_range(unit, target)
 	agent.set_state("enemy_in_attack_range", in_range)
+	agent.set_state("has_attack_target", true)
 	if not in_range and (
 		unit.current_destiny == Vector2.ZERO
 		or unit.current_destiny.distance_to(target.global_position) > 8
 	):
 		unit.final_destiny = target.global_position
-		Goap.get_action("Navigate").move(unit, target.global_position, false)
+		Goap.get_action("Navigate").move(unit, target.global_position)
 	return in_range
 
 
@@ -49,7 +49,7 @@ func enter(agent):
 		return
 	agent.set_state("enemy_in_attack_range", false)
 	unit.final_destiny = unit.target.global_position
-	Goap.get_action("Navigate").move(unit, unit.target.global_position, false)
+	Goap.get_action("Navigate").move(unit, unit.target.global_position)
 
 
 func exit(agent):
